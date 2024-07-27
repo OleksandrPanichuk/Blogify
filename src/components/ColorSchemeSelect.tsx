@@ -9,11 +9,22 @@ import {
 	useComputedColorScheme,
 	useMantineColorScheme,
 } from '@mantine/core'
+import { useMounted } from '@mantine/hooks'
 import { IconMoon, IconSun } from '@tabler/icons-react'
 
 export const ColorSchemeSelect = () => {
 	const { setColorScheme } = useMantineColorScheme()
 	const computedColorScheme = useComputedColorScheme('light')
+
+	const isMounted = useMounted()
+
+	if (!isMounted) {
+		return (
+			<ActionIcon variant='outline' size={'lg'} color='gray'>
+				<IconSun />
+			</ActionIcon>
+		)
+	}
 
 	return (
 		<Menu>

@@ -29,7 +29,7 @@ export const SignUpForm = () => {
 
 	const onSubmit = async (values: SignUpInput) => {
 		try {
-			await signUp(values)
+			const user = await signUp(values)
 			router.push('/')
 		} catch (error) {
 			if (error instanceof Error) {

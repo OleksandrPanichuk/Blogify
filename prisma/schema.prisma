@@ -7,6 +7,11 @@ generator client {
   provider = "prisma-client-js"
 }
 
+enum LikeType {
+  POST
+  COMMENT
+}
+
 model User {
   id       String    @id @default(uuid()) @db.Uuid
   sessions Session[]
@@ -16,6 +21,10 @@ model User {
   hash                String               @db.Text
   image               String?
   passwordResetTokens PasswordResetToken[]
+
+  following Follower[] @relation("following")
+  followers Follower[] @relation("followers")
+  comments  Comment[]
 }
 
 model Session {
@@ -35,4 +44,63 @@ model PasswordResetToken {
   user   User   @relation(fields: [userId], references: [id])
 
   expiresAt DateTime @map("expires_at")
+}
+
+model Follower {
+  id String @id @default(uuid()) @db.Uuid
+
+  followerId  String @map("follower_id") @db.Uuid
+  followingId String @map("following_id") @db.Uuid
+
+  follower  User @relation("following", fields: [followerId], references: [id], onDelete: Cascade)
+  following User @relation("followers", fields: [followingId], references: [id], onDelete: Cascade)
+}
+
+model Post {
+  id String @id @default(uuid()) @db.Uuid
+
+  title       String
+  description String
+  image       String?
+  content     String  @db.Text
+
+  updatedAt DateTime @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  likes    Like[]
+  comments Comment[]
+  tags     Tag[]
+}
+
+model Comment {
+  id String @id @default(uuid()) @db.Uuid
+
+  text      String   @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+
+  creator   User   @relation(fields: [creatorId], references: [id])
+  creatorId String @map("creator_id") @db.Uuid
+
+  post   Post   @relation(fields: [postId], references: [id])
+  postId String @map("post_id") @db.Uuid
+
+  likes Like[]
+}
+
+model Like {
+  id   String   @id @default(uuid()) @db.Uuid
+  type LikeType
+
+  post   Post?   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId String? @map("post_id") @db.Uuid
+
+  comment   Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  commentId String?  @map("comment_id") @db.Uuid
+}
+
+model Tag {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String
+  createdAt DateTime @default(now()) @map("created_at")
+  posts     Post[]
 }

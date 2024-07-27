@@ -1,6 +1,7 @@
 'use client'
 import { Routes } from '@/constants'
 import { signIn, signInSchema, type SignInInput } from '@/features/auth'
+import { useAuth } from '@/providers'
 import {
 	Anchor,
 	Button,
@@ -28,10 +29,14 @@ export const SignInForm = () => {
 	})
 
 	const router = useRouter()
+	const { setUser } = useAuth()
 
 	const onSubmit = async (values: SignInInput) => {
 		try {
-			await signIn(values)
+			const user = await signIn(values)
+			if (user) {
+				setUser(user)
+			}
 			router.push('/')
 		} catch (error) {
 			if (error instanceof Error) {

@@ -1,4 +1,4 @@
-import { ResetPasswordTemplate } from '@/components/templates'
+import { ResetPasswordTemplate } from './templates'
 import { render } from '@react-email/render'
 import { SendMailOptions, Transporter, createTransport } from 'nodemailer'
 
