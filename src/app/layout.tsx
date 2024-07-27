@@ -3,11 +3,11 @@ import { Notifications } from '@mantine/notifications'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 
-import { currentUser } from '@/features/auth'
 import { validateRequest } from '@/lib'
 import { AuthProvider, TRPCProvider } from '@/providers'
 import '@mantine/core/styles.css'
 import '@mantine/notifications/styles.css'
+import '@mantine/dropzone/styles.css';
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'] })

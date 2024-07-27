@@ -22,9 +22,10 @@ model User {
   image               String?
   passwordResetTokens PasswordResetToken[]
 
-  following Follower[] @relation("following")
-  followers Follower[] @relation("followers")
-  comments  Comment[]
+  following    Follower[]     @relation("following")
+  followers    Follower[]     @relation("followers")
+  comments     Comment[]
+  Notification Notification[]
 }
 
 model Session {
@@ -41,7 +42,7 @@ model PasswordResetToken {
   tokenHash String @map("token_hash")
 
   userId String @map("user_id") @db.Uuid
-  user   User   @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   expiresAt DateTime @map("expires_at")
 }
@@ -78,10 +79,10 @@ model Comment {
   text      String   @db.Text
   createdAt DateTime @default(now()) @map("created_at")
 
-  creator   User   @relation(fields: [creatorId], references: [id])
+  creator   User   @relation(fields: [creatorId], references: [id], onDelete: Cascade)
   creatorId String @map("creator_id") @db.Uuid
 
-  post   Post   @relation(fields: [postId], references: [id])
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId String @map("post_id") @db.Uuid
 
   likes Like[]
@@ -103,4 +104,14 @@ model Tag {
   name      String
   createdAt DateTime @default(now()) @map("created_at")
   posts     Post[]
+}
+
+model Notification {
+  id      String @id @default(uuid()) @db.Uuid
+  message String
+
+  user User @relation(fields: [userId], references: [id], onDelete:  Cascade)
+  userId    String   @db.Uuid @map("user_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
 }
