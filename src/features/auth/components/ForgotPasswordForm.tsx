@@ -1,5 +1,7 @@
 'use client'
 import { Routes } from '@/constants'
+import { type ForgotPasswordInput, forgotPasswordSchema, sendResetPasswordLink } from '@/features/auth'
+import { zodResolver } from '@hookform/resolvers/zod'
 import {
 	Anchor,
 	Box,
@@ -13,21 +15,18 @@ import {
 	TextInput,
 	Title,
 } from '@mantine/core'
-import { useForm } from '@mantine/form'
 import { notifications } from '@mantine/notifications'
 import { IconArrowLeft, IconCheck, IconX } from '@tabler/icons-react'
-import { zodResolver } from 'mantine-form-zod-resolver'
 import Link from 'next/link'
-import { sendResetPasswordLink } from '../api'
-import { forgotPasswordSchema } from '../schemas'
-import type { ForgotPasswordInput } from '../types'
+import { Controller, useForm } from 'react-hook-form'
 
 export function ForgotPasswordForm() {
 	const form = useForm<ForgotPasswordInput>({
-		validate: zodResolver(forgotPasswordSchema),
-		mode: 'uncontrolled',
-		validateInputOnBlur: true,
+		resolver: zodResolver(forgotPasswordSchema),
+		mode: 'onBlur',
 	})
+
+	const { control, handleSubmit } = form
 
 	const onSubmit = async (values: ForgotPasswordInput) => {
 		try {
@@ -60,19 +59,26 @@ export function ForgotPasswordForm() {
 
 			<Paper
 				component='form'
-				onSubmit={form.onSubmit(onSubmit)}
+				onSubmit={handleSubmit(onSubmit)}
 				withBorder
 				shadow='md'
 				p={30}
 				radius='md'
 				mt='xl'
 			>
-				<TextInput
-					label='Your email'
-					placeholder='example@gmail.com'
-					required
-					key={form.key('email')}
-					{...form.getInputProps('email')}
+				<Controller
+					control={control}
+					name='email'
+					render={({ field, fieldState }) => (
+						<TextInput
+							label='Your email'
+							placeholder='example@gmail.com'
+							required
+							withAsterisk
+							error={fieldState.error?.message}
+							{...field}
+						/>
+					)}
 				/>
 				<Group justify='space-between' mt='lg'>
 					<Anchor component={Link} href={Routes.SIGN_IN} c='dimmed' size='sm'>

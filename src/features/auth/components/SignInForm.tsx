@@ -2,6 +2,7 @@
 import { Routes } from '@/constants'
 import { signIn, signInSchema, type SignInInput } from '@/features/auth'
 import { useAuth } from '@/providers'
+import { zodResolver } from '@hookform/resolvers/zod'
 import {
 	Anchor,
 	Button,
@@ -14,19 +15,20 @@ import {
 	TextInput,
 	Title,
 } from '@mantine/core'
-import { useForm } from '@mantine/form'
+
 import { notifications } from '@mantine/notifications'
 import { IconX } from '@tabler/icons-react'
-import { zodResolver } from 'mantine-form-zod-resolver'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { Controller, useForm } from 'react-hook-form'
 
 export const SignInForm = () => {
 	const form = useForm<SignInInput>({
-		mode: 'uncontrolled',
-		validateInputOnBlur: true,
-		validate: zodResolver(signInSchema),
+		mode: 'onBlur',
+		resolver: zodResolver(signInSchema),
 	})
+
+	const { handleSubmit, control } = form
 
 	const router = useRouter()
 	const { setUser } = useAuth()
@@ -34,9 +36,7 @@ export const SignInForm = () => {
 	const onSubmit = async (values: SignInInput) => {
 		try {
 			const user = await signIn(values)
-			if (user) {
-				setUser(user)
-			}
+			setUser(user)
 			router.push('/')
 		} catch (error) {
 			if (error instanceof Error) {
@@ -61,28 +61,42 @@ export const SignInForm = () => {
 
 			<Paper
 				component='form'
-				onSubmit={form.onSubmit(onSubmit)}
+				onSubmit={handleSubmit(onSubmit)}
 				withBorder
 				shadow='md'
 				p={30}
 				mt={30}
 				radius='md'
 			>
-				<TextInput
-					label='Email'
-					placeholder='example@gmail.com'
-					type='email'
-					required
-					key={form.key('email')}
-					{...form.getInputProps('email')}
+				<Controller
+					control={control}
+					name='email'
+					render={({ field, fieldState }) => (
+						<TextInput
+							label='Email'
+							placeholder='example@gmail.com'
+							type='email'
+							required
+							withAsterisk
+							error={fieldState.error?.message}
+							{...field}
+						/>
+					)}
 				/>
-				<PasswordInput
-					label='Password'
-					placeholder='Your password'
-					required
-					mt='md'
-					key={form.key('password')}
-					{...form.getInputProps('password')}
+				<Controller
+					control={control}
+					name='password'
+					render={({ field, fieldState }) => (
+						<PasswordInput
+							label='Password'
+							placeholder='Your password'
+							mt='md'
+							required
+							withAsterisk
+							error={fieldState.error?.message}
+							{...field}
+						/>
+					)}
 				/>
 				<Group justify='space-between' mt='lg'>
 					<Checkbox label='Remember me' />

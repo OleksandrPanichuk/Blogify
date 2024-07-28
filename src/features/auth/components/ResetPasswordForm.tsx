@@ -4,20 +4,20 @@ import {
 	resetPassword,
 	resetPasswordSchema,
 } from '@/features/auth'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { Button, Container, Paper, PasswordInput, Title } from '@mantine/core'
-import { useForm } from '@mantine/form'
 import { notifications } from '@mantine/notifications'
 import { IconX } from '@tabler/icons-react'
-import { zodResolver } from 'mantine-form-zod-resolver'
 import { useRouter } from 'next/navigation'
+import { Controller, useForm } from 'react-hook-form'
 
 export const ResetPasswordForm = ({ token }: { token: string }) => {
 	const form = useForm<ResetPasswordInput>({
-		mode: 'uncontrolled',
-		validateInputOnChange: true,
-		validateInputOnBlur: true,
-		validate: zodResolver(resetPasswordSchema),
+		resolver: zodResolver(resetPasswordSchema),
+		mode: 'onBlur',
 	})
+
+	const { control, handleSubmit } = form
 
 	const router = useRouter()
 
@@ -43,29 +43,41 @@ export const ResetPasswordForm = ({ token }: { token: string }) => {
 
 			<Paper
 				component='form'
-				onSubmit={form.onSubmit(onSubmit)}
+				onSubmit={handleSubmit(onSubmit)}
 				withBorder
 				shadow='md'
 				p={30}
 				mt={30}
 				radius='md'
 			>
-				<PasswordInput
-					label='Password'
-					placeholder='Your password'
-					required
-					mt='md'
-					key={form.key('password')}
-					{...form.getInputProps('password')}
+				<Controller
+					control={control}
+					name='password'
+					render={({ field, fieldState }) => (
+						<PasswordInput
+							label='Password'
+							placeholder='Your password'
+							required
+							mt='md'
+							error={fieldState.error?.message}
+							{...field}
+						/>
+					)}
 				/>
 
-				<PasswordInput
-					label='Password'
-					placeholder='Your password'
-					required
-					mt='md'
-					key={form.key('confirmPassword')}
-					{...form.getInputProps('confirmPassword')}
+				<Controller
+					control={control}
+					name='confirmPassword'
+					render={({ field, fieldState }) => (
+						<PasswordInput
+							label='Password'
+							placeholder='Your password'
+							required
+							mt='md'
+							error={fieldState.error?.message}
+							{...field}
+						/>
+					)}
 				/>
 				<Button fullWidth mt='xl' type='submit'>
 					Reset password

@@ -10,17 +10,17 @@ import {
 	TextInput,
 	Title,
 } from '@mantine/core'
-import { useForm } from '@mantine/form'
-import { zodResolver } from 'mantine-form-zod-resolver'
+
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Controller, useForm } from 'react-hook-form'
 
 export const CreatePostForm = () => {
-	const form = useForm<Omit<CreatePostInput, 'file'>>({
-		validate: zodResolver(createPostSchema),
-		mode: 'uncontrolled',
-		validateInputOnBlur: true,
+	const form = useForm<CreatePostInput>({
+		resolver: zodResolver(createPostSchema),
+		mode: 'onBlur',
 	})
 
-	const {} = form
+	const { control, handleSubmit } = form
 
 	const { mutate: createPost } = api.posts.create.useMutation({})
 
@@ -30,30 +30,45 @@ export const CreatePostForm = () => {
 				Create Post
 			</Title>
 			<Flex component={'form'} gap={'1rem'} direction={'column'}>
-				<ImageDropzone />
-				<TextInput
-					label='Title'
-					placeholder={'Post title'}
-					withAsterisk={false}
-					required
-					key={form.key('title')}
-					{...form.getInputProps('title')}
+				<ImageDropzone name='image' control={control} />
+				<Controller
+					control={control}
+					name='title'
+					render={({ field, fieldState }) => (
+						<TextInput
+							label='Title'
+							placeholder={'Post title'}
+							withAsterisk={false}
+							required
+							error={fieldState.error?.message}
+							{...field}
+						/>
+					)}
 				/>
-				<Textarea
-					label='Description'
-					placeholder='Provide short description of your post'
-					minRows={2}
-					withAsterisk={false}
-					autosize
-					required
-					key={form.key('description')}
-					{...form.getInputProps('description')}
+				<Controller
+					control={control}
+					name='description'
+					render={({ field, fieldState }) => (
+						<Textarea
+							label='Description'
+							placeholder='Provide short description of your post'
+							minRows={2}
+							withAsterisk={false}
+							autosize
+							required
+							error={fieldState.error?.message}
+							{...field}
+						/>
+					)}
 				/>
 				<Flex direction={'column'} gap={4}>
 					<Text size='sm'>Content</Text>
-					<Editor
-						initialContent={null}
-						onChange={form.getInputProps('content').onChange}
+					<Controller
+						control={control}
+						name='content'
+						render={({ field }) => (
+							<Editor initialContent={null} onChange={field.onChange} />
+						)}
 					/>
 				</Flex>
 			</Flex>

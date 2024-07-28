@@ -1,6 +1,8 @@
 'use client'
 import { Routes } from '@/constants'
 import { SignUpInput, signUp, signUpSchema } from '@/features/auth'
+import { useAuth } from '@/providers'
+import { zodResolver } from '@hookform/resolvers/zod'
 import {
 	Anchor,
 	Button,
@@ -11,25 +13,28 @@ import {
 	TextInput,
 	Title,
 } from '@mantine/core'
-import { useForm } from '@mantine/form'
+
 import { notifications } from '@mantine/notifications'
 import { IconAt, IconX } from '@tabler/icons-react'
-import { zodResolver } from 'mantine-form-zod-resolver'
+
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { Controller, useForm } from 'react-hook-form'
 
 export const SignUpForm = () => {
-	const form = useForm<SignUpInput>({
-		mode: 'uncontrolled',
-		validateInputOnBlur: true,
-		validate: zodResolver(signUpSchema),
+	const { control, handleSubmit } = useForm<SignUpInput>({
+		resolver: zodResolver(signUpSchema),
+		mode: 'onBlur',
 	})
+
+	const { setUser } = useAuth()
 
 	const router = useRouter()
 
 	const onSubmit = async (values: SignUpInput) => {
 		try {
 			const user = await signUp(values)
+			setUser(user)
 			router.push('/')
 		} catch (error) {
 			if (error instanceof Error) {
@@ -55,38 +60,59 @@ export const SignUpForm = () => {
 
 			<Paper
 				component='form'
-				onSubmit={form.onSubmit(onSubmit)}
+				onSubmit={handleSubmit(onSubmit)}
 				withBorder
 				shadow='md'
 				p={30}
 				mt={30}
 				radius='md'
 			>
-				<TextInput
-					label='Username'
-					leftSection={<IconAt size={16} />}
-					placeholder='username'
-					required
-					mt='md'
-					key={form.key('username')}
-					{...form.getInputProps('username')}
+				<Controller
+					control={control}
+					name='username'
+					render={({ field, fieldState }) => (
+						<TextInput
+							label='Username'
+							leftSection={<IconAt size={16} />}
+							placeholder='username'
+							mt='md'
+							required
+							withAsterisk
+							error={fieldState.error?.message}
+							{...field}
+						/>
+					)}
 				/>
-				<TextInput
-					label='Email'
-					placeholder='example@gmail.com'
-					required
-					type='email'
-					mt='md'
-					key={form.key('email')}
-					{...form.getInputProps('email')}
+				<Controller
+					control={control}
+					name='email'
+					render={({ field, fieldState }) => (
+						<TextInput
+							label='Email'
+							placeholder='example@gmail.com'
+							type='email'
+							mt='md'
+							required
+							withAsterisk
+							error={fieldState.error?.message}
+							{...field}
+						/>
+					)}
 				/>
-				<PasswordInput
-					label='Password'
-					placeholder='Your password'
-					required
-					mt='md'
-					key={form.key('password')}
-					{...form.getInputProps('password')}
+				<Controller
+					control={control}
+					name='password'
+					render={({ field, fieldState }) => (
+						<PasswordInput
+							label='Password'
+							placeholder='Your password'
+							mt='md'
+							required
+							withAsterisk
+							error={fieldState.error?.message}
+							{...field}
+						/>
+					)}
 				/>
 				<Button fullWidth mt='xl' type='submit'>
 					Create account

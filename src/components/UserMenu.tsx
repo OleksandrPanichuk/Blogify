@@ -25,6 +25,7 @@ export const UserMenu = () => {
 					alt={user!.username}
 					color='initials'
 					name={user!.username}
+					className='cursor-pointer'	
 				/>
 			</MenuTarget>
 			<MenuDropdown miw={200}>
