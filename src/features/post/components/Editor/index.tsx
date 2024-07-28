@@ -1,73 +1,43 @@
 'use client'
-import { Link, RichTextEditor, getTaskListExtension } from '@mantine/tiptap'
-import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
-import { Color } from '@tiptap/extension-color'
-import Highlight from '@tiptap/extension-highlight'
-import Image from '@tiptap/extension-image'
-import SubScript from '@tiptap/extension-subscript'
-import Superscript from '@tiptap/extension-superscript'
-import TaskItem from '@tiptap/extension-task-item'
-import TipTapTaskList from '@tiptap/extension-task-list'
-import TextAlign from '@tiptap/extension-text-align'
-import TextStyle from '@tiptap/extension-text-style'
-import Underline from '@tiptap/extension-underline'
-import { useEditor } from '@tiptap/react'
-import StarterKit from '@tiptap/starter-kit'
-
-import '@mantine/tiptap/styles.css'
+import { RichTextEditor } from '@mantine/tiptap'
 import { IconColorPicker } from '@tabler/icons-react'
-import styles from './Editor.module.css'
-import { InsertImageWithUrlControl, lowlight } from './extensions'
+
+import {
+	FontFamilyControls,
+	fontsClassName,
+	IframeControl,
+	InsertImageWithUrlControl,
+	UploadImageControl
+} from './extensions'
+
+import { useTipTapEditor } from './Editor.hooks'
+
+import { cn } from '@/lib'
+import '@mantine/tiptap/styles.css'
+import styles from './Editor.module.scss'
 
 interface EditorProps {
 	onChange: (content: string) => void
 	initialContent: string | null
 }
 
-const useTipTapEditor = (
-	content: string | null,
-	onChange?: (content: string) => void
-) => {
-	return useEditor({
-		extensions: [
-			StarterKit.configure({ codeBlock: false }),
-			Underline,
-			Link,
-			Superscript,
-			SubScript,
-			Highlight,
-			TextAlign.configure({ types: ['heading', 'paragraph'] }),
-			TextStyle,
-			Color,
-			CodeBlockLowlight.configure({ lowlight }),
-			getTaskListExtension(TipTapTaskList),
-			Image,
-			TaskItem.configure({
-				nested: true,
-				HTMLAttributes: {
-					class: 'test-item',
-				},
-			}),
-		],
-		content: content ? JSON.parse(content) : {},
-		onUpdate: props => {
-			onChange?.(JSON.stringify(props.editor.getJSON()))
-		},
-	})
-}
-// TODO: image, mention, placeholder, youtube, fontFamily, table
+// TODO:  mention, table
 
 export const Editor = ({ onChange, initialContent }: EditorProps) => {
 	const editor = useTipTapEditor(initialContent, onChange)
 
 	return (
-		<RichTextEditor className={styles.editor} editor={editor}>
+		<RichTextEditor
+			className={cn(styles.editor, fontsClassName)}
+			editor={editor}
+		>
 			<RichTextEditor.Toolbar sticky>
 				<RichTextEditor.ControlsGroup>
 					<RichTextEditor.Bold />
 					<RichTextEditor.Italic />
 					<RichTextEditor.Underline />
 					<RichTextEditor.Strikethrough />
+					<FontFamilyControls />
 					<RichTextEditor.ClearFormatting />
 					<RichTextEditor.Highlight />
 					<RichTextEditor.CodeBlock />
@@ -96,7 +66,11 @@ export const Editor = ({ onChange, initialContent }: EditorProps) => {
 					<RichTextEditor.Unlink />
 				</RichTextEditor.ControlsGroup>
 
-				<InsertImageWithUrlControl />
+				<RichTextEditor.ControlsGroup>
+					<InsertImageWithUrlControl />
+					<IframeControl />
+					<UploadImageControl />
+				</RichTextEditor.ControlsGroup>
 
 				<RichTextEditor.ColorPicker
 					colors={[
@@ -149,7 +123,7 @@ export const Editor = ({ onChange, initialContent }: EditorProps) => {
 				<RichTextEditor.UnsetColor />
 			</RichTextEditor.Toolbar>
 
-			<RichTextEditor.Content />
+			<RichTextEditor.Content mih={200} />
 		</RichTextEditor>
 	)
 }
@@ -162,7 +136,7 @@ export const EditorOutput = ({ content }: EditorOutputProps) => {
 
 	return (
 		<RichTextEditor
-			className={styles.editor}
+			className={cn(styles.editor, fontsClassName)}
 			editor={editor}
 			contentEditable={false}
 		>

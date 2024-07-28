@@ -3,14 +3,13 @@ import { Notifications } from '@mantine/notifications'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 
-import { validateRequest } from '@/lib'
+import { cn, validateRequest } from '@/lib'
 import { AuthProvider, TRPCProvider } from '@/providers'
 import '@mantine/core/styles.css'
 import '@mantine/notifications/styles.css'
-import '@mantine/dropzone/styles.css';
 import './globals.css'
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 
 export const metadata: Metadata = {
 	title: 'Blogify',
@@ -27,16 +26,14 @@ export default async function RootLayout({
 }: Readonly<{
 	children: React.ReactNode
 }>) {
-
 	const { user } = await validateRequest()
-
 
 	return (
 		<html lang='en' suppressHydrationWarning>
 			<head>
 				<ColorSchemeScript />
 			</head>
-			<body className={inter.className}>
+			<body className={cn(inter.className, inter.variable)}>
 				<TRPCProvider>
 					<AuthProvider initialUser={user}>
 						<MantineProvider theme={theme} defaultColorScheme='auto'>

@@ -1,3 +1,4 @@
+"use client"
 import { RichTextEditor, useRichTextEditorContext } from "@mantine/tiptap"
 import { IconPhoto, IconPictureInPicture } from "@tabler/icons-react"
 import { useCallback } from "react"
