@@ -5,7 +5,7 @@ const utapi = new UTApi({
 	apiKey: process.env.UPLOADTHING_SECRET,
 })
 
-export async function uploadFile(formData: FormData) {
+export async function uploadFileServer(formData: FormData) {
 	try {
 		const file = formData.get('file') as File | null
 

@@ -12,7 +12,16 @@ import superJSON from 'superjson'
 export const api = createTRPCReact<AppRouter>()
 
 export function TRPCProvider(props: { children: React.ReactNode }) {
-	const [queryClient] = useState(() => new QueryClient())
+	const [queryClient] = useState(
+		() =>
+			new QueryClient({
+				defaultOptions: {
+					queries: {
+						refetchOnWindowFocus: false,
+					},
+				},
+			})
+	)
 
 	const [trpcClient] = useState(() =>
 		api.createClient({
@@ -24,7 +33,7 @@ export function TRPCProvider(props: { children: React.ReactNode }) {
 						(op.direction === 'down' && op.result instanceof Error),
 				}),
 				unstable_httpBatchStreamLink({
-					url: absoluteUrl(''),
+					url: absoluteUrl('/api/trpc'),
 				}),
 			],
 		})

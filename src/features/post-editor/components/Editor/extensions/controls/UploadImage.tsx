@@ -1,5 +1,5 @@
 'use client'
-import { uploadFile } from '@/server/uploadthing'
+import { uploadFile } from '@/lib'
 import { FileButton } from '@mantine/core'
 import { notifications } from '@mantine/notifications'
 import { RichTextEditor, useRichTextEditorContext } from '@mantine/tiptap'
@@ -19,9 +19,7 @@ export function UploadImageControl() {
 					return
 				}
 
-				const formData = new FormData()
-				formData.append('file', file)
-				const url = await uploadFile(formData)
+				const url = await uploadFile(file)
 				if (url) {
 					editor?.chain().focus().setImage({ src: url }).run()
 				}

@@ -19,17 +19,19 @@ import styles from './Editor.module.scss'
 interface EditorProps {
 	onChange: (content: string) => void
 	initialContent: string | null
+	disabled?: boolean
 }
 
 // TODO:  mention, table
 
-export const Editor = ({ onChange, initialContent }: EditorProps) => {
+export const Editor = ({ onChange, initialContent, disabled }: EditorProps) => {
 	const editor = useTipTapEditor(initialContent, onChange)
 
 	return (
 		<RichTextEditor
 			className={cn(styles.editor, fontsClassName)}
 			editor={editor}
+			contentEditable={disabled ? false : undefined}
 		>
 			<RichTextEditor.Toolbar sticky>
 				<RichTextEditor.ControlsGroup>

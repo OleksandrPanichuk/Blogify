@@ -14,7 +14,12 @@ export const createPostSchema = z.object({
 		.min(1, FormErrors.required.description)
 		.min(10, FormErrors.length.description),
 	content: z.string({ required_error: FormErrors.required.content }),
-	image: z.instanceof(File).optional(),
+	image: z.string().url().optional(),
+	tags: z
+		.array(z.string().trim().min(2, FormErrors.length.tags), {
+			required_error: FormErrors.required.tags,
+		})
+		.min(1, FormErrors.required.tags),
 })
 
 export type CreatePostInput = z.infer<typeof createPostSchema>

@@ -9,6 +9,7 @@ import { Control, FieldValues, Path, useController } from 'react-hook-form'
 interface IImageDropzoneProps<T extends FieldValues> {
 	control: Control<T>
 	name: Path<T>
+	disabled?: boolean
 }
 
 export const ImageDropzone = <T extends FieldValues = FieldValues>({
@@ -49,6 +50,10 @@ export const ImageDropzone = <T extends FieldValues = FieldValues>({
 					onReject={files => console.log('rejected files', files)}
 					maxSize={5 * 1024 ** 2}
 					accept={IMAGE_MIME_TYPE}
+					ref={field.ref}
+					inputProps={{
+						name: field.name,
+					}}
 				>
 					<Group
 						justify='center'

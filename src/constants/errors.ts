@@ -8,12 +8,14 @@ export const FormErrors = {
 		title: 'Title is required',
 		content: 'Content is required',
 		description: 'Description is required',
+		tags: 'You should provide at least one tag'
 	},
 	invalid: {
 		email: 'Invalid email address',
 	},
 	length: {
 		password: 'Password is too short',
+		tags: 'Tag is too short',
 		title: {
 			long: 'Title is too long',
 			short: 'Title is too short',
