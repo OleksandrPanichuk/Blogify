@@ -1,3 +1,6 @@
-export * from './users'
+export * from './bookmarks'
+export * from './follows'
+export * from './likes'
 export * from './posts'
 export * from './tags'
+export * from './users'

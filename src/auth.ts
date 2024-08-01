@@ -1,5 +1,5 @@
 import { PrismaAdapter } from '@lucia-auth/adapter-prisma'
-import { Lucia} from 'lucia'
+import { Lucia } from 'lucia'
 import { db } from './lib/db'
 
 const adapter = new PrismaAdapter(db.session, db.user)
@@ -16,6 +16,7 @@ export const lucia = new Lucia(adapter, {
 			email: databaseUserAttributes.email,
 			username: databaseUserAttributes.username,
 			image: databaseUserAttributes.image,
+			name: databaseUserAttributes.name,
 		}
 	},
 })
@@ -30,5 +31,6 @@ declare module 'lucia' {
 interface DatabaseUserAttributes {
 	email: string
 	username: string
-	image:string | null
+	image: string | null
+	name: string
 }

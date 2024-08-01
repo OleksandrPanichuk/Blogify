@@ -11,7 +11,7 @@ export async function signUp(input: SignUpInput) {
 		if (!parsedValue.success) {
 			throw new Error(parsedValue.error.message)
 		}
-		const { email, password, username } = parsedValue.data
+		const { email, password, username, name } = parsedValue.data
 
 		const existingUser = await db.user.findFirst({
 			where: {
@@ -36,12 +36,14 @@ export async function signUp(input: SignUpInput) {
 			data: {
 				email,
 				username,
+				name,
 				hash: passwordHash,
 			},
 			select: {
 				id: true,
 				email: true,
 				username: true,
+				name: true,
 				image: true,
 			},
 		})

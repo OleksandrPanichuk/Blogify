@@ -1,6 +1,5 @@
 'use client'
 import { Editor, ImageDropzone, TagsInput } from '@/features/post-editor'
-import { api } from '@/providers'
 import { CreatePostInput, createPostSchema } from '@/server'
 import {
 	Container,
@@ -11,10 +10,8 @@ import {
 	Title,
 } from '@mantine/core'
 
-import { uploadFile } from '@/lib'
+import { useCreatePost } from '@/api'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { notifications } from '@mantine/notifications'
-import { IconCheck, IconX } from '@tabler/icons-react'
 import { Controller, useForm } from 'react-hook-form'
 
 type FormValues = Omit<CreatePostInput, 'image'> & {
@@ -33,34 +30,12 @@ export const CreatePostForm = () => {
 		formState: { isSubmitting },
 	} = form
 
-	const { mutateAsync: createPost } = api.posts.create.useMutation({})
+	const { mutateAsync: createPost } = useCreatePost()
 
-	const onSubmit = async ({ file, ...values }: FormValues) => {
-		const fileToUpload = file ?? form.getValues('file')
-		try {
-			const url = fileToUpload ? await uploadFile(fileToUpload) : undefined
-
-			await createPost({
-				...values,
-				image: url,
-			})
-
-			notifications.show({
-				message: 'Post created successfully',
-				icon: <IconCheck />,
-				color: 'green',
-			})
-		} catch (err) {
-			notifications.show({
-				message: 'Failed to create post',
-				icon: <IconX />,
-				color: 'red',
-			})
-		}
-	}
+	const onSubmit = (values: FormValues) => createPost(values)
 
 	return (
-		<Container size={800} w={'100%'} pb={100} mt={24}>
+		<Container w={'100%'} pb={100}>
 			<Title order={1} mb={24}>
 				Create Post
 			</Title>

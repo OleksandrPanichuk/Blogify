@@ -1,7 +1,6 @@
 'use client'
 import { cn } from '@/lib'
 import { api } from '@/providers'
-import { CreatePostInput } from '@/server'
 import {
 	CheckIcon,
 	Combobox,
@@ -14,7 +13,7 @@ import {
 } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
 import { useState } from 'react'
-import { Control, FieldValue, FieldValues, Path, useController } from 'react-hook-form'
+import { Control, FieldValues, Path, useController } from 'react-hook-form'
 
 interface ITagInputProps<T extends FieldValues> {
 	control: Control<T>
@@ -36,35 +35,29 @@ export function TagsInput<T extends FieldValues = FieldValues>({
 	const { value, onChange } = field
 
 	const [search, setSearch] = useState('')
-	const [data, setData] = useState<string[]>([])
 	const [created, setCreated] = useState<string[]>([])
-
 
 	const [debouncedSearchValue] = useDebouncedValue(search, 500)
 
-	api.tags.get.useQuery(
-		{
-			searchValue: debouncedSearchValue,
-			take: 20,
-		},
-		{
-			onSuccess: data => setData([...created, ...data.map(item => item.name)]),	
-		}
-	)
+	const { data = [] } = api.tags.get.useQuery({
+		searchValue: debouncedSearchValue,
+		take: 20,
+	})
 
-	const exactOptionMatch = data.some(item => item === search)
+	const fullData = [...created, ...data.map(el => el.name)]
+
+	const exactOptionMatch = fullData.some(item => item === search)
 
 	const handleValueSelect = (val: string) => {
 		setSearch('')
 
 		if (val === '$create') {
-			const getNewValue = (current: string[] ): string[] => {
+			const getNewValue = (current: string[]): string[] => {
 				const newItem = search.startsWith('#') ? search : `#${search}`
 				return [...current, newItem]
 			}
-			setData(getNewValue)
 			setCreated(getNewValue)
-			onChange(() => getNewValue(value ?? []))
+			onChange(getNewValue(value ?? []))
 		} else {
 			onChange(value?.includes(val) ? value : [...(value ?? []), val])
 		}
@@ -80,7 +73,7 @@ export function TagsInput<T extends FieldValues = FieldValues>({
 		</Pill>
 	))
 
-	const options = data
+	const options = fullData
 		.filter(item => item.toLowerCase().includes(search.trim().toLowerCase()))
 		.map(item => (
 			<Combobox.Option value={item} key={item} active={value?.includes(item)}>

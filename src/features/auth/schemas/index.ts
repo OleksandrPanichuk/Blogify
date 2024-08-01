@@ -19,7 +19,16 @@ export const signUpSchema = signInSchema.merge(
 		username: z
 			.string({ required_error: FormErrors.required.username })
 			.trim()
-			.min(1, FormErrors.required.username),
+			.min(1, FormErrors.required.username).refine(
+				(value) => !/\s/.test(value), 
+				{
+						message: FormErrors.invalid.username
+				}
+		),
+		name: z
+			.string({ required_error: FormErrors.required.name })
+			.trim()
+			.min(1, FormErrors.required.name),
 	})
 )
 

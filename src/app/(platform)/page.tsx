@@ -1,14 +1,8 @@
 'use client'
-import { useAuth } from '@/providers'
+import { redirect } from 'next/navigation'
 
 const Page = () => {
-	const { user } = useAuth()
-	return (
-		<div>
-			Main
-			<p>{user?.username ?? 'No user'}</p>
-		</div>
-	)
+	return redirect('/posts')
 }
 
 export default Page

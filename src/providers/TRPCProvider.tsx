@@ -1,6 +1,7 @@
 'use client'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { loggerLink, unstable_httpBatchStreamLink } from '@trpc/client'
 import { createTRPCReact } from '@trpc/react-query'
 import { useState } from 'react'
@@ -18,6 +19,7 @@ export function TRPCProvider(props: { children: React.ReactNode }) {
 				defaultOptions: {
 					queries: {
 						refetchOnWindowFocus: false,
+						staleTime: 60 * 1000,
 					},
 				},
 			})
@@ -25,7 +27,6 @@ export function TRPCProvider(props: { children: React.ReactNode }) {
 
 	const [trpcClient] = useState(() =>
 		api.createClient({
-			transformer: superJSON,
 			links: [
 				loggerLink({
 					enabled: op =>
@@ -33,6 +34,7 @@ export function TRPCProvider(props: { children: React.ReactNode }) {
 						(op.direction === 'down' && op.result instanceof Error),
 				}),
 				unstable_httpBatchStreamLink({
+					transformer: superJSON,
 					url: absoluteUrl('/api/trpc'),
 				}),
 			],
@@ -43,6 +45,7 @@ export function TRPCProvider(props: { children: React.ReactNode }) {
 		<QueryClientProvider client={queryClient}>
 			<api.Provider client={trpcClient} queryClient={queryClient}>
 				{props.children}
+				<ReactQueryDevtools initialIsOpen={false} />
 			</api.Provider>
 		</QueryClientProvider>
 	)

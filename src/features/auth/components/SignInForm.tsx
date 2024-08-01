@@ -19,25 +19,21 @@ import {
 import { notifications } from '@mantine/notifications'
 import { IconX } from '@tabler/icons-react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { Controller, useForm } from 'react-hook-form'
 
 export const SignInForm = () => {
-	const form = useForm<SignInInput>({
+	const {handleSubmit, control, formState: {isSubmitting}} = useForm<SignInInput>({
 		mode: 'onBlur',
 		resolver: zodResolver(signInSchema),
 	})
 
-	const { handleSubmit, control } = form
 
-	const router = useRouter()
 	const { setUser } = useAuth()
 
 	const onSubmit = async (values: SignInInput) => {
 		try {
 			const user = await signIn(values)
 			setUser(user)
-			router.push('/')
 		} catch (error) {
 			if (error instanceof Error) {
 				notifications.show({
@@ -79,6 +75,7 @@ export const SignInForm = () => {
 							required
 							withAsterisk
 							error={fieldState.error?.message}
+							disabled={isSubmitting}
 							{...field}
 						/>
 					)}
@@ -94,6 +91,8 @@ export const SignInForm = () => {
 							required
 							withAsterisk
 							error={fieldState.error?.message}
+							disabled={isSubmitting}
+
 							{...field}
 						/>
 					)}
@@ -104,7 +103,7 @@ export const SignInForm = () => {
 						Forgot password?
 					</Anchor>
 				</Group>
-				<Button fullWidth mt='xl' type='submit'>
+				<Button fullWidth mt='xl' type='submit' disabled={isSubmitting}>
 					Sign in
 				</Button>
 			</Paper>

@@ -29,11 +29,11 @@ export const Editor = ({ onChange, initialContent, disabled }: EditorProps) => {
 
 	return (
 		<RichTextEditor
-			className={cn(styles.editor, fontsClassName)}
+			className={cn(styles.editor, fontsClassName, disabled && 'pointer-events-none')}
 			editor={editor}
 			contentEditable={disabled ? false : undefined}
 		>
-			<RichTextEditor.Toolbar sticky>
+			<RichTextEditor.Toolbar sticky >
 				<RichTextEditor.ControlsGroup>
 					<RichTextEditor.Bold />
 					<RichTextEditor.Italic />

@@ -18,24 +18,21 @@ import { notifications } from '@mantine/notifications'
 import { IconAt, IconX } from '@tabler/icons-react'
 
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { Controller, useForm } from 'react-hook-form'
 
 export const SignUpForm = () => {
-	const { control, handleSubmit } = useForm<SignUpInput>({
+	const { control, handleSubmit, formState: {isSubmitting} } = useForm<SignUpInput>({
 		resolver: zodResolver(signUpSchema),
 		mode: 'onBlur',
 	})
 
 	const { setUser } = useAuth()
 
-	const router = useRouter()
 
 	const onSubmit = async (values: SignUpInput) => {
 		try {
 			const user = await signUp(values)
 			setUser(user)
-			router.push('/')
 		} catch (error) {
 			if (error instanceof Error) {
 				notifications.show({
@@ -79,6 +76,23 @@ export const SignUpForm = () => {
 							required
 							withAsterisk
 							error={fieldState.error?.message}
+							disabled={isSubmitting}
+							{...field}
+						/>
+					)}
+				/>
+				<Controller
+					control={control}
+					name='name'
+					render={({ field, fieldState }) => (
+						<TextInput
+							label='Name'
+							placeholder='your name'
+							mt='md'
+							required
+							withAsterisk
+							error={fieldState.error?.message}
+							disabled={isSubmitting}
 							{...field}
 						/>
 					)}
@@ -95,6 +109,7 @@ export const SignUpForm = () => {
 							required
 							withAsterisk
 							error={fieldState.error?.message}
+							disabled={isSubmitting}
 							{...field}
 						/>
 					)}
@@ -110,11 +125,12 @@ export const SignUpForm = () => {
 							required
 							withAsterisk
 							error={fieldState.error?.message}
+							disabled={isSubmitting}
 							{...field}
 						/>
 					)}
 				/>
-				<Button fullWidth mt='xl' type='submit'>
+				<Button fullWidth mt='xl' type='submit'disabled={isSubmitting} >
 					Create account
 				</Button>
 			</Paper>

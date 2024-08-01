@@ -31,7 +31,7 @@ export const CreatePostButton = () => {
 				<Button
 					leftSection={<IconPlus />}
 					className='hidden sm:block'
-					onClick={isCreateOrEditPage ? navigateToCreate : undefined}
+					onClick={!isCreateOrEditPage ? navigateToCreate : undefined}
 					form={formId}
 					type={type}
 				>

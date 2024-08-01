@@ -1,21 +1,25 @@
 'use client'
-import { ActionIcon, Modal, TextInput } from '@mantine/core'
-import { useDisclosure } from '@mantine/hooks'
+import { ActionIcon, TextInput } from '@mantine/core'
+import { useDebouncedValue } from '@mantine/hooks'
 import { IconSearch } from '@tabler/icons-react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
 import { Visibility } from './Visibility'
 
 export const SearchField = () => {
-	const [isOpen, { open, close }] = useDisclosure()
 	const router = useRouter()
 
-	const navigate = () => router.push('/')
-	const onOpen = () => {
-		open()
-		navigate()
-	}
+	const [value, setValue] = useState('')
 
-	
+	const [debouncedValue] = useDebouncedValue(value, 500)
+
+	useEffect(() => {
+		if (debouncedValue) {
+			router.push(`/search?q=${debouncedValue}`)
+		}
+	}, [debouncedValue, router])
+
 	return (
 		<>
 			<Visibility breakpoint='(min-width: 640px)'>
@@ -23,7 +27,6 @@ export const SearchField = () => {
 					placeholder='Search'
 					className='hidden sm:block'
 					leftSection={<IconSearch />}
-					onFocus={navigate}
 				/>
 			</Visibility>
 			<Visibility breakpoint='(max-width: 639.98px)'>
@@ -32,13 +35,11 @@ export const SearchField = () => {
 					color='gray'
 					variant='outline'
 					size={'lg'}
-					onClick={onOpen}
+					component={Link}
+					href='/search'
 				>
 					<IconSearch />
 				</ActionIcon>
-				<Modal opened={isOpen} onClose={close} title='Search posts '>
-					<TextInput placeholder='Search' leftSection={<IconSearch />} />
-				</Modal>
 			</Visibility>
 		</>
 	)

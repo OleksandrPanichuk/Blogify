@@ -14,7 +14,7 @@ export async function uploadFileServer(formData: FormData) {
 		}
 
 		const response = await utapi.uploadFiles([file])
-		console.log(response)
+
 		if (response?.[0].error) {
 			throw response?.[0].error
 		}
@@ -26,5 +26,15 @@ export async function uploadFileServer(formData: FormData) {
 			throw err
 		}
 		throw new Error('Failed to upload file')
+	}
+}
+
+
+
+export async function deleteFile(url:string) {
+	try {
+    await utapi.deleteFiles([url]);
+	} catch {
+		throw new Error('Failed to delete file')
 	}
 }

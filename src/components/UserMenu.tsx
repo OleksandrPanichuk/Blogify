@@ -1,5 +1,6 @@
 'use client'
 
+import { signOut } from '@/features/auth'
 import { useAuth } from '@/providers'
 import {
 	Avatar,
@@ -13,19 +14,16 @@ import { IconLogout, IconSettings, IconUser } from '@tabler/icons-react'
 import Link from 'next/link'
 
 export const UserMenu = () => {
-	const { user } = useAuth()
-
-	// TODO: sign out function
-	const signOut = () => {}
+	const { user, setUser } = useAuth()
 	return (
 		<Menu position='bottom-end'>
 			<MenuTarget>
 				<Avatar
 					src={user!.image}
-					alt={user!.username}
+					alt={user!.name}
 					color='initials'
-					name={user!.username}
-					className='cursor-pointer'	
+					name={user!.name}
+					className='cursor-pointer'
 				/>
 			</MenuTarget>
 			<MenuDropdown miw={200}>
@@ -38,13 +36,20 @@ export const UserMenu = () => {
 				</MenuItem>
 				<MenuItem
 					component={Link}
-					href='/settigns'
+					href='/settings'
 					leftSection={<IconSettings />}
 				>
 					Settings
 				</MenuItem>
 				<MenuDivider />
-				<MenuItem color='red' onClick={signOut} leftSection={<IconLogout />}>
+				<MenuItem
+					color='red'
+					onClick={async () => {
+						await signOut()
+						setUser(null)
+					}}
+					leftSection={<IconLogout />}
+				>
 					Sign Out
 				</MenuItem>
 			</MenuDropdown>

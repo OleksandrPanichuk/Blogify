@@ -10,6 +10,7 @@ const AuthLayout = ({ children }: PropsWithChildren) => {
 	if (user) {
 		return redirect('/')
 	}
+	
 	return (
 		<Box className='flex items-center justify-center min-h-screen'>
 			{children}

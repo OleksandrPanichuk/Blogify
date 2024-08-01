@@ -1,5 +1,5 @@
 import { uncachedValidateRequest } from '@/lib'
-import { initTRPC, TRPCError, type inferAsyncReturnType } from '@trpc/server'
+import { initTRPC, TRPCError} from '@trpc/server'
 import superjson from 'superjson'
 import { ZodError } from 'zod'
 
@@ -44,7 +44,7 @@ export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
 	})
 })
 
-export type TRPCContext = inferAsyncReturnType<typeof createTRPCContext>
+export type TRPCContext = Awaited<ReturnType<typeof createTRPCContext>>
 export type ProtectedTRPCContext = TRPCContext & {
 	user: NonNullable<TRPCContext['user']>
 	session: NonNullable<TRPCContext['session']>

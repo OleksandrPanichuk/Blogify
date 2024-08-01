@@ -12,6 +12,7 @@ export const FormErrors = {
 	},
 	invalid: {
 		email: 'Invalid email address',
+		username: "Username should not contain spaces"
 	},
 	length: {
 		password: 'Password is too short',

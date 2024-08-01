@@ -17,15 +17,19 @@ model User {
   sessions Session[]
 
   username            String               @unique
+  name                String
   email               String               @unique
   hash                String               @db.Text
   image               String?
   passwordResetTokens PasswordResetToken[]
 
-  following    Follower[]     @relation("following")
-  followers    Follower[]     @relation("followers")
-  comments     Comment[]
-  Notification Notification[]
+  following     Follower[]     @relation("following")
+  followers     Follower[]     @relation("followers")
+  comments      Comment[]
+  notifications Notification[]
+  posts         Post[]
+  boomarks      Bookmark[]
+  likes         Like[]
 }
 
 model Session {
@@ -68,9 +72,13 @@ model Post {
   updatedAt DateTime @updatedAt @map("updated_at")
   createdAt DateTime @default(now()) @map("created_at")
 
-  likes    Like[]
-  comments Comment[]
-  tags     Tag[]
+  likes     Like[]
+  comments  Comment[]
+  tags      Tag[]
+  bookmarks Bookmark[]
+
+  creator   User   @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  creatorId String @map("creator_id") @db.Uuid
 }
 
 model Comment {
@@ -97,6 +105,9 @@ model Like {
 
   comment   Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
   commentId String?  @map("comment_id") @db.Uuid
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @db.Uuid
 }
 
 model Tag {
@@ -110,8 +121,18 @@ model Notification {
   id      String @id @default(uuid()) @db.Uuid
   message String
 
-  user User @relation(fields: [userId], references: [id], onDelete:  Cascade)
-  userId    String   @db.Uuid @map("user_id")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @map("user_id") @db.Uuid
 
   createdAt DateTime @default(now()) @map("created_at")
+}
+
+model Bookmark {
+  id String @id @default(uuid()) @db.Uuid
+
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId String @map("post_id") @db.Uuid
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @map("user_id") @db.Uuid
 }

@@ -1,4 +1,5 @@
 import { FormErrors } from '@/constants'
+import { Post } from '@prisma/client'
 import { z } from 'zod'
 
 export const createPostSchema = z.object({
@@ -23,3 +24,49 @@ export const createPostSchema = z.object({
 })
 
 export type CreatePostInput = z.infer<typeof createPostSchema>
+
+export const getPostsSchema = z.object({
+	searchValue: z.string().optional(),
+	take: z.number().positive().optional(),
+	cursor: z.string().nullish(),
+	sortBy: z.enum(['newest', 'popular']).optional(),
+	sortOrder: z.enum(['asc', 'desc']).optional(),
+	type: z.enum(['general', 'following']).optional(),
+})
+
+export type GetPostsInput = z.infer<typeof getPostsSchema>
+
+export type GetPostsPost = Post & {
+	creator: {
+		id: string
+		username: string
+		name: string
+		image: string | null
+	}
+	tags: {
+		id: string
+		name: string
+	}[]
+
+	likes: {
+		id: string
+	}[]
+	bookmarks: {
+		id: string
+	}[]
+	_count: {
+		likes: number
+		comments: number
+		tags: number
+	}
+}
+export type GetPostsResponse = {
+	posts: GetPostsPost[]
+	nextCursor: string | undefined
+}
+
+export const deletePostSchema = z.object({
+	id: z.string().uuid(),
+})
+
+export type DeletePostInput = z.infer<typeof deletePostSchema>
