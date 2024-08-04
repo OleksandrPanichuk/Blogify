@@ -20,8 +20,8 @@ interface IConfirmModalProps {
 	loading?: boolean
 	onConfirm?: () => void | Promise<void>
 	onReject?: () => void | Promise<void>
-	onModalClose?:() => void
-	children: (props:{open: () => void, opened: boolean}) => JSX.Element 
+	onModalClose?: () => void
+	children: (props: { open: () => void; opened: boolean }) => JSX.Element
 }
 
 export const ConfirmModal = ({
@@ -50,15 +50,13 @@ export const ConfirmModal = ({
 			return
 		}
 
-
 		close()
 		onModalClose?.()
 	}
 
-
 	return (
 		<>
-			{children({open, opened})}
+			{children({ open, opened })}
 			<ModalRoot opened={opened} onClose={handleClose} size='md' centered>
 				<ModalOverlay className='z-[1000000]' />
 				<ModalContent className='z-[1000000]'>
@@ -68,7 +66,11 @@ export const ConfirmModal = ({
 						<ModalCloseButton className='absolute top-2 right-2' />
 					</ModalHeader>
 					<ModalBody className='flex flex-col gap-2 sm:flex-row sm:justify-end'>
-						<Button variant={'light'} onClick={handleReject} disabled={loading}>
+						<Button
+							variant={'subtle'}
+							onClick={handleReject}
+							disabled={loading}
+						>
 							Cancel
 						</Button>
 						<Button

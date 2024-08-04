@@ -1,3 +1,4 @@
+import { TAKE_POSTS } from '@/constants'
 import { db } from '@/lib'
 import { deleteFile } from '@/server/uploadthing'
 import { Prisma } from '@prisma/client'
@@ -65,8 +66,11 @@ export const deletePost = async (input: DeletePostInput, userId: string) => {
 	})
 }
 
-export const getPosts = async (input: GetPostsInput, userId: string): Promise<GetPostsResponse> => {
-	const limit = input.take ?? 20
+export const getPosts = async (
+	input: GetPostsInput,
+	userId: string
+): Promise<GetPostsResponse> => {
+	const limit = input.take ?? TAKE_POSTS
 	const { cursor } = input
 
 	let orderBy: Prisma.PostOrderByWithRelationInput | undefined
@@ -92,10 +96,24 @@ export const getPosts = async (input: GetPostsInput, userId: string): Promise<Ge
 
 	const posts = await db.post.findMany({
 		where: {
-			title: {
-				contains: input.searchValue,
-				mode: 'insensitive',
-			},
+			OR: [
+				{
+					title: {
+						contains: input.searchValue,
+						mode: 'insensitive',
+					},
+				},
+				{
+					tags: {
+						some: {
+							name: {
+								startsWith: input.searchValue,
+								mode: 'insensitive',
+							},
+						},
+					},
+				},
+			],
 			...(input.type === 'following' && {
 				creator: {
 					followers: {
@@ -105,6 +123,27 @@ export const getPosts = async (input: GetPostsInput, userId: string): Promise<Ge
 					},
 				},
 			}),
+			...(input.bookmarked && {
+				bookmarks: {
+					some: {
+						userId,
+					},
+				},
+			}),
+			...(input.liked && {
+				likes: {
+					some: {
+						userId,
+					},
+				},
+			}),
+			...(input.tagId && {
+				tags: {
+					some: {
+						id: input.tagId
+					}
+				}
+			})
 		},
 		take: limit + 1,
 		cursor: cursor
@@ -120,13 +159,6 @@ export const getPosts = async (input: GetPostsInput, userId: string): Promise<Ge
 					username: true,
 					name: true,
 					image: true,
-				},
-			},
-			tags: {
-				take: 4,
-				select: {
-					id: true,
-					name: true,
 				},
 			},
 			likes: {

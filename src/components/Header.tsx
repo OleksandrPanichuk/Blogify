@@ -1,9 +1,10 @@
 'use client'
 import { CreatePostButton, Logo, SearchField, UserMenu, Visibility } from '@/components'
+import { Routes } from '@/constants'
 import { useAuth } from '@/providers'
-import { AppShellHeader, Avatar, Container, Flex, Title } from '@mantine/core'
-import { ColorSchemeSelect } from './ColorSchemeSelect'
+import { AppShellHeader, Container, Flex, Title } from '@mantine/core'
 import Link from 'next/link'
+import { ColorSchemeSelect } from './ColorSchemeSelect'
 
 export const Header = () => {
 	const { user } = useAuth()
@@ -12,9 +13,9 @@ export const Header = () => {
 		<AppShellHeader className='border-b border-b-zinc-400 flex items-center'>
 			<Container
 				size={1200}
-				className='flex  w-full justify-between items-center'
+				className='flex relative  w-full justify-between items-center'
 			>
-				<Flex component={Link} href="/" gap={'sm'} align='center'>
+				<Flex component={Link} href={Routes.ROOT} gap={'sm'} align='center'>
 					<Logo />
 					<Visibility breakpoint='(min-width: 640px)'>
 						<Title order={2} className='hidden sm:block'>

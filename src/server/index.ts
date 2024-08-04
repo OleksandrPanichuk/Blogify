@@ -4,6 +4,7 @@ import {
 	bookmarksRouter,
 	followsRouter,
 	likesRouter,
+	notificationsRouter,
 	postsRouter,
 	tagsRouter,
 	usersRouter,
@@ -17,6 +18,7 @@ export const appRouter = createTRPCRouter({
 	likes: likesRouter,
 	bookmarks: bookmarksRouter,
 	follows: followsRouter,
+	notifications: notificationsRouter,
 })
 
 export type AppRouter = typeof appRouter

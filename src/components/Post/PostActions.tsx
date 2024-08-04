@@ -2,6 +2,7 @@
 
 import { useDeletePost } from '@/api'
 import { ConfirmModal } from '@/components'
+import { Routes } from '@/constants'
 import {
 	ActionIcon,
 	Menu,
@@ -44,7 +45,7 @@ export const PostActions = ({ postId }: Props) => {
 					<MenuDropdown miw={150}>
 						<MenuItem
 							component={Link}
-							href={`/posts/${postId}/edit`}
+							href={Routes.EDIT_POST(postId)}
 							leftSection={<IconEdit />}
 						>
 							Edit

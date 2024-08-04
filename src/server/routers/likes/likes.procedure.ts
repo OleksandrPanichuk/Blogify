@@ -5,5 +5,5 @@ import { toggleLike } from './likes.service'
 export const likesRouter = createTRPCRouter({
 	toggle: protectedProcedure
 		.input(toggleLikeSchema)
-		.mutation(({ input, ctx }) => toggleLike(input, ctx.user.id)),
+		.mutation(({ input, ctx }) => toggleLike(input, ctx.user)),
 })

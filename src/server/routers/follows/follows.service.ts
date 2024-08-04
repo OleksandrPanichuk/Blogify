@@ -1,14 +1,13 @@
 import { db } from '@/lib'
+import { NotificationType } from '@prisma/client'
 import { TRPCError } from '@trpc/server'
+import { User } from 'lucia'
 import type { FollowInput, ToggleFollowInput } from './follows.dto'
 
-export const follow = async (
-	{ followingId }: FollowInput,
-	followerId: string
-) => {
+export const follow = async ({ followingId }: FollowInput, follower: User) => {
 	const isAlreadyFollowed = await db.follower.findFirst({
 		where: {
-			followerId,
+			followerId: follower.id,
 			followingId,
 		},
 	})
@@ -20,9 +19,9 @@ export const follow = async (
 		})
 	}
 
-	return await db.follower.create({
+	const follow = await db.follower.create({
 		data: {
-			followerId,
+			followerId: follower.id,
 			followingId,
 		},
 		include: {
@@ -33,31 +32,61 @@ export const follow = async (
 			},
 		},
 	})
+
+	await db.notification.create({
+		data: {
+			userId: followingId,
+			message: `@${follower.username} followed you`,
+			type: NotificationType.FOLLOW,
+		},
+	})
+
+	return follow
 }
 
 export const toggleFollow = async (
 	{ followingId }: ToggleFollowInput,
-	followerId: string
+	follower: User
 ) => {
 	const existingFollow = await db.follower.findFirst({
 		where: {
-			followerId,
+			followerId: follower.id,
 			followingId,
 		},
 	})
 
 	if (existingFollow) {
-		return await db.follower.delete({
+		const deletedFollow = await db.follower.delete({
 			where: {
 				id: existingFollow.id,
 			},
 		})
+
+		await db.notification.create({
+			data: {
+				userId: followingId,
+				message: `@${follower.username} unfollowed you`,
+				type: NotificationType.UNFOLLOW,
+			},
+		})
+
+		return deletedFollow
 	}
 
-	return await db.follower.create({
+	const follow = await db.follower.create({
 		data: {
-			followerId,
+			followerId: follower.id,
 			followingId,
 		},
 	})
+
+	await db.notification.create({
+		data: {
+			userId: followingId,
+			message: `@${follower.username} followed you`,
+			type: NotificationType.FOLLOW,
+		},
+	})
+
+	return follow
 }

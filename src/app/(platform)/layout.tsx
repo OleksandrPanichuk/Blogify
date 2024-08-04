@@ -1,5 +1,5 @@
 'use client'
-import { Header, Navigation, WhoToFollow, TopHashtags } from '@/components'
+import { Header, Navigation, TopHashtags, WhoToFollow } from '@/components'
 import { useAuth } from '@/providers'
 import { AppShell, AppShellMain, Box, Container } from '@mantine/core'
 import { redirect } from 'next/navigation'
@@ -21,7 +21,7 @@ const PlatformLayout = ({ children }: PropsWithChildren) => {
 					<Container
 						size={1200}
 						pt={16}
-						className='flex items-start gap-4'
+						className='flex flex-col sm:flex-row items-start gap-4'
 						pos='relative'
 					>
 						<Navigation />

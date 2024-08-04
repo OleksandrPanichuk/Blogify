@@ -1,5 +1,6 @@
 'use client'
 
+import { Routes } from '@/constants'
 import { signOut } from '@/features/auth'
 import { useAuth } from '@/providers'
 import {
@@ -29,14 +30,14 @@ export const UserMenu = () => {
 			<MenuDropdown miw={200}>
 				<MenuItem
 					component={Link}
-					href='/profile/me'
+					href={Routes.PROFILE_ME}
 					leftSection={<IconUser />}
 				>
 					Profile
 				</MenuItem>
 				<MenuItem
 					component={Link}
-					href='/settings'
+					href={Routes.SETTINGS}
 					leftSection={<IconSettings />}
 				>
 					Settings

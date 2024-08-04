@@ -1,21 +1,30 @@
 'use client'
 
-import { Post } from '@/components'
-import { api } from '@/providers'
+import { Loader, Post } from '@/components'
+import { api, usePostsContext } from '@/providers'
+import { Stack, Text } from '@mantine/core'
+import { useSearchParams } from 'next/navigation'
 import { Fragment, useCallback, useRef } from 'react'
-import { usePostsStore } from '../store'
 
-export const Feed = () => {
-	const tab = usePostsStore(s => s.tab)
-	const sortBy = usePostsStore(s => s.sortBy)
+type Props = {
+	bookmarked?: boolean
+	liked?: boolean
+	tagId?: string
+}
 
+export const Feed = (props: Props) => {
+	const { sortBy, type } = usePostsContext()
 	const observer = useRef<IntersectionObserver>()
+
+	const searchParams = useSearchParams()
+
 	const { data, fetchNextPage, hasNextPage, isFetching, isLoading } =
 		api.posts.get.useInfiniteQuery(
 			{
+				type,
 				sortBy,
-				type: tab,
-				take: 1,
+				searchValue: searchParams.get('q') ?? undefined,
+				...props,
 			},
 			{
 				getNextPageParam: lastPage => lastPage.nextCursor,
@@ -39,23 +48,20 @@ export const Feed = () => {
 		[fetchNextPage, hasNextPage, isFetching, isLoading]
 	)
 
-	if (!data?.pages?.[0].posts.length && isLoading) {
-		return <div>Loading...</div>
-	}
-
-	if (!data?.pages?.[0].posts.length) {
-		return <div>Nothing found</div>
+	if (!data?.pages?.[0].posts.length && !isLoading) {
+		return <Text mt={16}>Nothing found</Text>
 	}
 
 	return (
-		<div className='flex flex-col mt-4 gap-4'>
-			{data.pages.map((page, i) => (
+		<Stack gap={'md'} my={16}>
+			{data?.pages.map((page, i) => (
 				<Fragment key={i}>
 					{page.posts.map(post => (
 						<Post key={post.id} data={post} ref={lastElementRef} />
 					))}
 				</Fragment>
 			))}
-		</div>
+			{isFetching && <Loader />}
+		</Stack>
 	)
 }

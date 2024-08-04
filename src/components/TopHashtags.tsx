@@ -1,5 +1,6 @@
 'use client'
 
+import { Routes } from '@/constants'
 import { api } from '@/providers'
 import {
 	Button,
@@ -20,7 +21,7 @@ export const TopHashtags = () => {
 		withCount: true,
 	})
 
-	if (!isLoading && data?.length === 0) {
+	if (!isLoading && data?.tags.length === 0) {
 		return null
 	}
 
@@ -35,12 +36,12 @@ export const TopHashtags = () => {
 								.map((_, index) => (
 									<Skeleton h={16} component='li' key={index} width={'70%'} />
 								))
-						: data?.map(tag => (
+						: data?.tags.map(tag => (
 								<ListItem key={tag.id}>
 									<Flex direction='column'>
 										<Text
 											component={Link}
-											href={`/tags/${tag.id}`}
+											href={Routes.TAG(tag.id)}
 											className='text-black dark:text-white'
 											size='md'
 										>
@@ -60,7 +61,12 @@ export const TopHashtags = () => {
 						  ))}
 				</List>
 				{!isLoading && (
-					<Button variant='transparent' className='hover:underline self-start' component={Link} href='/tags'>
+					<Button
+						variant='transparent'
+						className='hover:underline self-start'
+						component={Link}
+						href={Routes.TAGS}
+					>
 						Show more
 					</Button>
 				)}

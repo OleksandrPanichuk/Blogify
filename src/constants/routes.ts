@@ -1,8 +1,19 @@
-export enum Routes {
-	ROOT = '/',
-
-	// AUTH
-	SIGN_IN = '/sign-in',
-	SIGN_UP = '/sign-up',
-	FORGOT_PASSWORD = '/forgot-password',
-}
+export const Routes = {
+	ROOT: '/',
+	SIGN_IN: '/sign-in',
+	SIGN_UP: '/sign-up',
+	FORGOT_PASSWORD: '/forgot-password',
+	PROFILE: (username: string) => `/profile/${username}`,
+	PROFILE_ME: '/profile/me',
+	PROFILE_ME_LIKED: '/profile/me/liked',
+	POST: (postId: string) => `/posts/${postId}`,
+	POSTS: '/posts',
+	EDIT_POST: (postId: string) => `/posts/${postId}/edit`,
+	CREATE_POST: '/posts/create',
+	NOTIFICATIONS: '/notifications',
+	BOOKMARKS: '/bookmarks',
+	SETTINGS: '/settings',
+	TAGS: '/tags',
+	TAG: (tagId: string) => `/tags/${tagId}`,
+	USERS: '/users',
+} as const

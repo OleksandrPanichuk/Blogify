@@ -21,13 +21,16 @@ import Link from 'next/link'
 import { Controller, useForm } from 'react-hook-form'
 
 export const SignUpForm = () => {
-	const { control, handleSubmit, formState: {isSubmitting} } = useForm<SignUpInput>({
+	const {
+		control,
+		handleSubmit,
+		formState: { isSubmitting },
+	} = useForm<SignUpInput>({
 		resolver: zodResolver(signUpSchema),
 		mode: 'onBlur',
 	})
 
 	const { setUser } = useAuth()
-
 
 	const onSubmit = async (values: SignUpInput) => {
 		try {
@@ -130,7 +133,7 @@ export const SignUpForm = () => {
 						/>
 					)}
 				/>
-				<Button fullWidth mt='xl' type='submit'disabled={isSubmitting} >
+				<Button fullWidth mt='xl' type='submit' disabled={isSubmitting}>
 					Create account
 				</Button>
 			</Paper>

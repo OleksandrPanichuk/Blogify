@@ -1,6 +1,7 @@
 'use client'
 
 import { useFollow } from '@/api'
+import { Routes } from '@/constants'
 import { formatCount } from '@/lib'
 import { api } from '@/providers'
 import {
@@ -54,7 +55,7 @@ export const WhoToFollow = () => {
 						variant='transparent'
 						className='hover:underline self-start'
 						component={Link}
-						href='/tags'
+						href={Routes.USERS}
 					>
 						Show more
 					</Button>
@@ -75,8 +76,8 @@ type ItemProps = {
 const Item = ({ user }: ItemProps) => {
 	const { mutate: follow, isPending } = useFollow()
 	return (
-		<Flex w={'100%'} gap={8} align={'center'}>
-			<Link href={`/profile/${user.id}`}>
+		<Flex w={'100%'} gap={8}>
+			<Link href={Routes.PROFILE(user.username)}>
 				<Avatar
 					src={user.image}
 					alt={`avatar ${user.name}`}
@@ -87,11 +88,11 @@ const Item = ({ user }: ItemProps) => {
 			<Flex className='flex-1' direction={'column'}>
 				<Text
 					component={Link}
-					href={`/profile/${user.id}`}
-					className='text-black dark:text-white'
-					size='md'
+					href={Routes.PROFILE(user.username)}
+					className='text-black dark:text-white line-clamp-1'
+					size='sm'
 				>
-					{user.username}
+					{user.name}
 				</Text>
 
 				<Text

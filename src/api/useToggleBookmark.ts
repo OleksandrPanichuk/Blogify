@@ -1,8 +1,16 @@
 'use client'
 
-import { api } from "@/providers"
-
+import { api } from '@/providers'
+import { useQueryClient } from '@tanstack/react-query'
 
 export const useToggleBookmark = () => {
-	return api.bookmarks.toggle.useMutation()
+	const queryClient = useQueryClient()
+	return api.bookmarks.toggle.useMutation({
+		onSuccess: () => {
+			queryClient.invalidateQueries({
+				queryKey: [['posts', 'get']],
+				type: 'all',
+			})
+		},
+	})
 }

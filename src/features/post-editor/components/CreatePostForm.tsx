@@ -27,12 +27,20 @@ export const CreatePostForm = () => {
 	const {
 		control,
 		handleSubmit,
-		formState: { isSubmitting },
+		formState: { isSubmitting, errors },
 	} = form
+
+	console.log(errors)
 
 	const { mutateAsync: createPost } = useCreatePost()
 
-	const onSubmit = (values: FormValues) => createPost(values)
+	const onSubmit = (values: FormValues) => {
+		const file = values.file ?? form.getValues('file')
+		createPost({
+			...values,
+			file,
+		})
+	}
 
 	return (
 		<Container w={'100%'} pb={100}>

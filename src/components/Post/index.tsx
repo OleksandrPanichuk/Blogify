@@ -1,5 +1,6 @@
 'use client'
 
+import { Routes } from '@/constants'
 import { formatCount, formatRelativeDate } from '@/lib'
 import { useAuth } from '@/providers'
 import type { GetPostsPost } from '@/server'
@@ -32,7 +33,7 @@ export const Post = memo(
 			<Paper ref={ref} className='rounded-xl p-3' withBorder>
 				<Flex align='center' justify={'space-between'} gap={12}>
 					<Flex align='center' gap={12}>
-						<Link href={`/profile/${creator.id}`}>
+						<Link href={Routes.PROFILE(creator.username)}>
 							<Avatar
 								src={creator.image}
 								alt={creator.name}
@@ -43,7 +44,7 @@ export const Post = memo(
 						<Flex direction={'column'}>
 							<Flex
 								component={Link}
-								href={`/profile/${creator.id}`}
+								href={Routes.PROFILE(creator.username)}
 								align='center'
 								gap={4}
 							>
@@ -53,7 +54,7 @@ export const Post = memo(
 								<Text size='xs'>@{creator.username}</Text>
 							</Flex>
 							<Link
-								href={`/posts/${id}`}
+								href={Routes.POST(id)}
 								className='block text-sm text-muted-foreground hover:underline'
 							>
 								{formatRelativeDate(data.createdAt)}
@@ -64,14 +65,14 @@ export const Post = memo(
 				</Flex>
 				<Box my={16}>
 					<Title order={3} className='line-clamp-1'>
-						<Link href={`/posts/${id}`}>{title}</Link>
+						<Link href={Routes.POST(id)}>{title}</Link>
 					</Title>
 					<Text className='line-clamp-4'>
-						<Link href={`/posts/${id}`}>{description}</Link>
+						<Link href={Routes.POST(id)}>{description}</Link>
 					</Text>
 				</Box>
 				{image && (
-					<Link href={`/posts/${id}`}>
+					<Link href={Routes.POST(id)}>
 						<Image src={image} alt={'preview image'} height={100} />
 					</Link>
 				)}
@@ -79,7 +80,12 @@ export const Post = memo(
 				<Flex align={'center'} justify='space-between' gap={12}>
 					<Flex gap={12}>
 						<LikeButton likes={likes} count={data._count.likes} postId={id} />
-						<Flex component={Link} href={`/posts/${id}`} align='center' gap={4}>
+						<Flex
+							component={Link}
+							href={Routes.POST(id)}
+							align='center'
+							gap={4}
+						>
 							<IconMessage />
 							{formatCount(data._count.comments, {
 								one: 'comment',

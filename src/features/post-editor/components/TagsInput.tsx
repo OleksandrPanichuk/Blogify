@@ -12,7 +12,7 @@ import {
 	useCombobox,
 } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
-import { useState } from 'react'
+import { ChangeEvent, useState } from 'react'
 import { Control, FieldValues, Path, useController } from 'react-hook-form'
 
 interface ITagInputProps<T extends FieldValues> {
@@ -31,7 +31,7 @@ export function TagsInput<T extends FieldValues = FieldValues>({
 		onDropdownOpen: () => combobox.updateSelectedOptionIndex('active'),
 	})
 
-	const { field } = useController({ control, name })
+	const { field, fieldState } = useController({ control, name })
 	const { value, onChange } = field
 
 	const [search, setSearch] = useState('')
@@ -39,12 +39,13 @@ export function TagsInput<T extends FieldValues = FieldValues>({
 
 	const [debouncedSearchValue] = useDebouncedValue(search, 500)
 
-	const { data = [] } = api.tags.get.useQuery({
+	const { data } = api.tags.get.useQuery({
 		searchValue: debouncedSearchValue,
 		take: 20,
 	})
+	const tagsFromDB = data?.tags ?? []
 
-	const fullData = [...created, ...data.map(el => el.name)]
+	const fullData = [...created, ...tagsFromDB.map(el => el.name)]
 
 	const exactOptionMatch = fullData.some(item => item === search)
 
@@ -53,7 +54,9 @@ export function TagsInput<T extends FieldValues = FieldValues>({
 
 		if (val === '$create') {
 			const getNewValue = (current: string[]): string[] => {
-				const newItem = search.startsWith('#') ? search : `#${search}`
+				let newItem: string = search.startsWith('#') ? search : `#${search}`
+				newItem = newItem.replace(/\s/g, '-')
+
 				return [...current, newItem]
 			}
 			setCreated(getNewValue)
@@ -65,6 +68,11 @@ export function TagsInput<T extends FieldValues = FieldValues>({
 
 	const handleValueRemove = (val: string) => {
 		onChange((value as string[])?.filter(v => v !== val))
+	}
+
+	const handleSearchValueChange = (e: ChangeEvent<HTMLInputElement>) => {
+		combobox.updateSelectedOptionIndex()
+		setSearch(e.currentTarget.value.replace(/\s/g, '-'))
 	}
 
 	const values = (value as string[])?.map(item => (
@@ -107,10 +115,7 @@ export function TagsInput<T extends FieldValues = FieldValues>({
 									onBlur={() => combobox.closeDropdown()}
 									value={search}
 									placeholder='Search values'
-									onChange={event => {
-										combobox.updateSelectedOptionIndex()
-										setSearch(event.currentTarget.value)
-									}}
+									onChange={handleSearchValueChange}
 									disabled={disabled}
 									onKeyDown={event => {
 										if (event.key === 'Backspace' && search.length === 0) {
@@ -148,6 +153,9 @@ export function TagsInput<T extends FieldValues = FieldValues>({
 					</Combobox.Options>
 				</Combobox.Dropdown>
 			</Combobox>
+			<Text c='red' size='sm'>
+				{fieldState.error?.message}
+			</Text>
 		</Flex>
 	)
 }

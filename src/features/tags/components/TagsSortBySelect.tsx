@@ -1,9 +1,9 @@
 'use client'
 
-import { TypeSortBy, usePostsStore } from '@/features/posts'
+import { useTagsStore } from '@/features/tags'
+import { GetTagsInput } from '@/server'
 import {
 	Button,
-	ChipGroup,
 	Combobox,
 	ComboboxDropdown,
 	ComboboxOption,
@@ -14,37 +14,40 @@ import {
 } from '@mantine/core'
 import { IconCheck } from '@tabler/icons-react'
 
-const sortByOptions: { value: TypeSortBy; label: string }[] = [
+const sortByOptions: {
+	value: NonNullable<GetTagsInput['sortBy']>
+	label: string
+}[] = [
 	{
-		label: 'Mot recent',
-		value: 'newest',
+		label: 'Name',
+		value: 'name',
 	},
 	{
-		label: 'Most popular',
-		value: 'popular',
+		label: 'Count',
+		value: 'count',
 	},
 ]
 
-type Props = {
-	className?: string
-}
-
-export const SortBySelect = ({ className }: Props) => {
+export const TagsSortBySelect = () => {
 	const combobox = useCombobox({
 		onDropdownClose: () => combobox.resetSelectedOption(),
 	})
 
-	const {sortBy, setSortBy} = usePostsStore(s => ({
-		setSortBy:s.setSortBy,
-		sortBy :s.sortBy
+	const { setSortBy, sortBy } = useTagsStore(s => ({
+		sortBy: s.sortBy,
+		setSortBy: s.setSortBy,
 	}))
 
 	const options = sortByOptions.map(option => (
-		<ComboboxOption key={option.value} value={option.value}  active={option.value === sortBy}>
-				<Group gap='sm'>
-					{option.value === sortBy ? <IconCheck size={12} /> : null}
-					<span>{option.label}</span>
-				</Group>
+		<ComboboxOption
+			key={option.value}
+			value={option.value}
+			active={option.value === sortBy}
+		>
+			<Group gap='sm'>
+				{option.value === sortBy ? <IconCheck size={12} /> : null}
+				<span>{option.label}</span>
+			</Group>
 		</ComboboxOption>
 	))
 
@@ -52,14 +55,13 @@ export const SortBySelect = ({ className }: Props) => {
 		<Combobox
 			store={combobox}
 			onOptionSubmit={val => {
-				setSortBy(val as TypeSortBy)
+				setSortBy(val as GetTagsInput['sortBy'])
 				combobox.closeDropdown()
 			}}
 			position='bottom-end'
 		>
 			<ComboboxTarget>
 				<Button
-					className={className}
 					onClick={() => combobox.toggleDropdown()}
 					color='gray'
 					variant='subtle'
@@ -68,7 +70,7 @@ export const SortBySelect = ({ className }: Props) => {
 				</Button>
 			</ComboboxTarget>
 			<ComboboxDropdown miw={150}>
-				<ComboboxOptions >{options}</ComboboxOptions>
+				<ComboboxOptions>{options}</ComboboxOptions>
 			</ComboboxDropdown>
 		</Combobox>
 	)

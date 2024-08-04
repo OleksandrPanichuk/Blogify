@@ -1,4 +1,5 @@
 'use client'
+import { Routes } from '@/constants'
 import { ActionIcon, Button, Tooltip } from '@mantine/core'
 import { IconPlus } from '@tabler/icons-react'
 import { useParams, usePathname, useRouter } from 'next/navigation'
@@ -9,11 +10,11 @@ export const CreatePostButton = () => {
 	const pathname = usePathname()
 	const { postId } = useParams()
 
-	const isCreatePage = pathname.includes('/posts/create')
-	const isEditPage = pathname.includes(`/posts/${postId}/edit`)
+	const isCreatePage = pathname.includes(Routes.CREATE_POST)
+	const isEditPage = pathname.includes(Routes.EDIT_POST(postId as string))
 	const isCreateOrEditPage = isCreatePage || isEditPage
 
-	const navigateToCreate = () => router.push('/posts/create')
+	const navigateToCreate = () => router.push(Routes.CREATE_POST)
 
 	const formId = isCreatePage
 		? 'post-create-form'
@@ -35,7 +36,7 @@ export const CreatePostButton = () => {
 					form={formId}
 					type={type}
 				>
-					{label} 
+					{label}
 				</Button>
 			</Visibility>
 			<Visibility breakpoint='(max-width: 639.98px)'>
