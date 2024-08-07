@@ -1,14 +1,17 @@
 'use client'
-import { CreatePostButton, Logo, SearchField, UserMenu, Visibility } from '@/components'
+import {
+	CreatePostButton,
+	Logo,
+	SearchField,
+	UserMenu,
+	Visibility,
+} from '@/components'
 import { Routes } from '@/constants'
-import { useAuth } from '@/providers'
 import { AppShellHeader, Container, Flex, Title } from '@mantine/core'
 import Link from 'next/link'
 import { ColorSchemeSelect } from './ColorSchemeSelect'
 
 export const Header = () => {
-	const { user } = useAuth()
-
 	return (
 		<AppShellHeader className='border-b border-b-zinc-400 flex items-center'>
 			<Container

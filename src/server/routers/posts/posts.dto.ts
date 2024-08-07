@@ -29,10 +29,16 @@ export const createPostSchema = z.object({
 				required_error: FormErrors.required.tags,
 			}
 		)
-		.min(1, FormErrors.required.tags)
+		.min(1, FormErrors.required.tags),
+})
+
+export const updatePostSchema = createPostSchema.extend({
+	id: z.string().uuid(),
+	image: z.string().url().nullish(),
 })
 
 export type CreatePostInput = z.infer<typeof createPostSchema>
+export type UpdatePostInput = z.infer<typeof updatePostSchema>
 
 export const getPostsSchema = z.object({
 	searchValue: z.string().optional(),
@@ -44,6 +50,7 @@ export const getPostsSchema = z.object({
 	bookmarked: z.boolean().optional(),
 	tagId: z.string().uuid().optional(),
 	liked: z.boolean().optional(),
+	creatorId: z.string().uuid().optional(),
 })
 
 export type GetPostsInput = z.infer<typeof getPostsSchema>
@@ -78,3 +85,44 @@ export const deletePostSchema = z.object({
 })
 
 export type DeletePostInput = z.infer<typeof deletePostSchema>
+
+export const getPostByIdSchema = z.object({
+	id: z.string().uuid(),
+	isCreator: z.boolean().optional(),
+})
+
+export type GetPostByIdInput = z.infer<typeof getPostByIdSchema>
+
+export type GetPostByIdWithTagsResponse = Post & {
+	tags: {
+		id: string
+		name: string
+	}[]
+}
+
+export type GetFullPostResponse = Post & {
+	creator: {
+		id: string
+		username: string
+		name: string
+		image: string | null
+		followers: {
+			id: string
+		}[]
+	}
+	likes: {
+		id: string
+	}[]
+	bookmarks: {
+		id: string
+	}[]
+	tags: {
+		id: string
+		name: string
+	}[]
+	_count: {
+		likes: number
+		comments: number
+		tags: number
+	}
+}

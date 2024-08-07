@@ -9,6 +9,7 @@ export function InsertImageWithUrlControl() {
     const url = window.prompt('URL')
 
     if (url) {
+      // @ts-ignore
       editor?.chain().focus().setImage({ src: url }).run()
     }
   }, [editor])

@@ -8,7 +8,6 @@ import { PropsWithChildren } from 'react'
 const PlatformLayout = ({ children }: PropsWithChildren) => {
 	const { user } = useAuth()
 
-	console.log(user)
 	if (!user) {
 		return redirect('/sign-in')
 	}

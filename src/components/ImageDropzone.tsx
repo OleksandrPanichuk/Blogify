@@ -1,4 +1,5 @@
 'use client'
+import { cn } from '@/lib'
 import { ActionIcon, Box, Flex, Group, Image, rem, Text } from '@mantine/core'
 import { Dropzone, IMAGE_MIME_TYPE } from '@mantine/dropzone'
 import '@mantine/dropzone/styles.css'
@@ -10,30 +11,43 @@ interface IImageDropzoneProps<T extends FieldValues> {
 	control: Control<T>
 	name: Path<T>
 	disabled?: boolean
+	defaultValue?: string | null
+	label: string
+	minHeight?: number
+	previewImageClassName?: string
+	square?: boolean
 }
+
 
 export const ImageDropzone = <T extends FieldValues = FieldValues>({
 	control,
 	name,
+	defaultValue,
+	label,
+	disabled,
+	minHeight = 220,
+	previewImageClassName,
+	square,
 }: IImageDropzoneProps<T>) => {
 	const { field } = useController({ control, name })
-	const [file, setFile] = useState<File>()
+	const [url, setUrl] = useState<string>(defaultValue ?? '')
 
 	return (
 		<Flex direction={'column'} gap={4}>
-			<Text size='sm'>Preview image(optional)</Text>
-			{file ? (
+			<Text size='sm'>{label}</Text>
+			{url ? (
 				<Box pos={'relative'}>
 					<Image
-						mih={220}
+						mih={minHeight}
 						w={'100%'}
-						src={URL.createObjectURL(file)}
+						className={previewImageClassName}
+						src={url}
 						alt='preview image'
 					/>
 					<ActionIcon
 						className='rounded-full absolute top-4 right-4'
 						onClick={() => {
-							setFile(undefined)
+							setUrl('')
 							field.onChange(undefined)
 						}}
 						color='red'
@@ -44,7 +58,7 @@ export const ImageDropzone = <T extends FieldValues = FieldValues>({
 			) : (
 				<Dropzone
 					onDrop={files => {
-						setFile(files[0])
+						setUrl(URL.createObjectURL(files[0]))
 						field.onChange(files[0])
 					}}
 					onReject={files => console.log('rejected files', files)}
@@ -54,11 +68,13 @@ export const ImageDropzone = <T extends FieldValues = FieldValues>({
 					inputProps={{
 						name: field.name,
 					}}
+					disabled={disabled}
 				>
 					<Group
 						justify='center'
 						gap='xl'
-						mih={220}
+						mih={minHeight}
+						className={cn(square && 'aspect-square')}
 						style={{ pointerEvents: 'none' }}
 					>
 						<Dropzone.Accept>
@@ -94,7 +110,7 @@ export const ImageDropzone = <T extends FieldValues = FieldValues>({
 
 						<div>
 							<Text size='xl' inline>
-								Drag images here or click to select files
+								Drag image here or click to select file
 							</Text>
 						</div>
 					</Group>

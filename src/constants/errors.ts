@@ -9,6 +9,7 @@ export const FormErrors = {
 		content: 'Content is required',
 		description: 'Description is required',
 		tags: 'You should provide at least one tag',
+		comment: 'Comment is required',
 	},
 	invalid: {
 		email: 'Invalid email address',
@@ -23,6 +24,7 @@ export const FormErrors = {
 			short: 'Title is too short',
 		},
 		description: 'Description is too short',
+		comment: 'Comment is too short',
 	},
 	match: {
 		passwords: "Passwords don't match",

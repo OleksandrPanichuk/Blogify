@@ -1,21 +1,21 @@
 import { uncachedValidateRequest } from '@/lib'
-import { initTRPC, TRPCError} from '@trpc/server'
+import { initTRPC, TRPCError } from '@trpc/server'
 import superjson from 'superjson'
 import { ZodError } from 'zod'
+import { appRouter } from '.'
 
-export const createTRPCContext = async (opts: { headers: Headers }) => {
+export const createTRPCContext = async () => {
 	const { session, user } = await uncachedValidateRequest()
 	return {
 		session,
 		user,
-		headers: opts.headers,
 	}
 }
 
-const t = initTRPC.context<typeof createTRPCContext>().create({
+export const t = initTRPC.context<typeof createTRPCContext>().create({
 	transformer: superjson,
-	isServer:true,
-	allowOutsideOfServer:true,
+	isServer: true,
+	allowOutsideOfServer: true,
 	errorFormatter({ shape, error }) {
 		return {
 			...shape,
@@ -27,6 +27,8 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
 		}
 	},
 })
+
+
 
 export const createTRPCRouter = t.router
 
@@ -49,3 +51,5 @@ export type ProtectedTRPCContext = TRPCContext & {
 	user: NonNullable<TRPCContext['user']>
 	session: NonNullable<TRPCContext['session']>
 }
+
+

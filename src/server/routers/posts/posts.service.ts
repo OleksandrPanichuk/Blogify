@@ -6,8 +6,12 @@ import { TRPCError } from '@trpc/server'
 import type {
 	CreatePostInput,
 	DeletePostInput,
+	GetFullPostResponse,
+	GetPostByIdInput,
+	GetPostByIdWithTagsResponse,
 	GetPostsInput,
 	GetPostsResponse,
+	UpdatePostInput,
 } from './posts.dto'
 
 export const createPost = async (input: CreatePostInput, userId: string) => {
@@ -30,6 +34,90 @@ export const createPost = async (input: CreatePostInput, userId: string) => {
 			creatorId: userId,
 			tags: {
 				connect: tagConnections,
+			},
+		},
+	})
+}
+
+export const updatePost = async (input: UpdatePostInput, userId: string) => {
+	const post = await db.post.findUnique({
+		where: {
+			id: input.id,
+		},
+		select: {
+			image: true,
+			creatorId: true,
+			tags: {
+				select: {
+					id: true,
+					name: true,
+				},
+			},
+		},
+	})
+
+	if (!post) {
+		throw new TRPCError({
+			message: 'Post not found',
+			code: 'NOT_FOUND',
+		})
+	}
+
+	if (post.creatorId !== userId) {
+		throw new TRPCError({
+			message: "You cannot edit another user's post",
+			code: 'FORBIDDEN',
+		})
+	}
+
+	if (post.image && input.image !== post.image) {
+		await deleteFile(post.image)
+	}
+
+	const existingTags = await db.tag.findMany({
+		where: {
+			name: { in: input.tags },
+		},
+		select: {
+			id: true,
+			name: true,
+		},
+	})
+
+	const existingTagNames = existingTags.map(tag => tag.name)
+	const newTagNames = input.tags.filter(tag => !existingTagNames.includes(tag))
+
+	const newTags = await Promise.all(
+		newTagNames.map(name =>
+			db.tag.create({
+				data: { name },
+				select: { id: true, name: true },
+			})
+		)
+	)
+
+	const allTags = [...existingTags, ...newTags]
+
+	const currentTagIds = post.tags.map(tag => tag.id)
+	const newTagIds = allTags.map(tag => tag.id)
+
+	const tagsToDisconnect = currentTagIds.filter(
+		tagId => !newTagIds.includes(tagId)
+	)
+	const tagsToConnect = newTagIds.filter(
+		tagId => !currentTagIds.includes(tagId)
+	)
+
+	return await db.post.update({
+		where: {
+			id: input.id,
+			creatorId: userId,
+		},
+		data: {
+			...input,
+			tags: {
+				disconnect: tagsToDisconnect.map(id => ({ id })),
+				connect: tagsToConnect.map(id => ({ id })),
 			},
 		},
 	})
@@ -114,6 +202,9 @@ export const getPosts = async (
 					},
 				},
 			],
+			...(input.creatorId && {
+				creatorId: input.creatorId,
+			}),
 			...(input.type === 'following' && {
 				creator: {
 					followers: {
@@ -140,10 +231,10 @@ export const getPosts = async (
 			...(input.tagId && {
 				tags: {
 					some: {
-						id: input.tagId
-					}
-				}
-			})
+						id: input.tagId,
+					},
+				},
+			}),
 		},
 		take: limit + 1,
 		cursor: cursor
@@ -196,4 +287,126 @@ export const getPosts = async (
 		posts,
 		nextCursor,
 	}
+}
+
+export const getPostByIdWithTags = async (
+	input: GetPostByIdInput,
+	userId: string
+): Promise<GetPostByIdWithTagsResponse> => {
+	const post = await db.post.findUnique({
+		where: {
+			id: input.id,
+			creatorId: input.isCreator ? userId : undefined,
+		},
+		include: {
+			tags: {
+				select: {
+					id: true,
+					name: true,
+				},
+			},
+		},
+	})
+
+	if (!post) {
+		throw new TRPCError({
+			message: 'Post not found',
+			code: 'NOT_FOUND',
+		})
+	}
+
+	return post
+}
+
+export const getFullPost = async (
+	input: GetPostByIdInput,
+	userId: string
+): Promise<GetFullPostResponse> => {
+	const post = await db.post.findUnique({
+		where: {
+			id: input.id,
+			creatorId: input.isCreator ? userId : undefined,
+		},
+		include: {
+			creator: {
+				select: {
+					id: true,
+					username: true,
+					name: true,
+					image: true,
+					followers: {
+						where: {
+							followerId: userId,
+						},
+						select: {
+							id: true,
+						},
+					},
+				},
+			},
+			likes: {
+				where: {
+					userId,
+				},
+				select: {
+					id: true,
+				},
+			},
+			comments: {
+				include: {
+					creator: {
+						select: {
+							id: true,
+							username: true,
+							name: true,
+							image: true,
+						},
+					},
+					likes: {
+						where: {
+							userId,
+						},
+						select: {
+							id: true,
+						},
+					},
+					_count: {
+						select: {
+							likes: true,
+						},
+					},
+				},
+			},
+			bookmarks: {
+				where: {
+					userId,
+				},
+				select: {
+					id: true,
+				},
+			},
+			tags: {
+				select: {
+					id: true,
+					name: true,
+				},
+			},
+			_count: {
+				select: {
+					likes: true,
+					comments: true,
+					tags: true,
+				},
+			},
+		},
+	})
+
+	if (!post) {
+		throw new TRPCError({
+			message: 'Post not found',
+			code: 'NOT_FOUND',
+		})
+	}
+
+	return post
 }

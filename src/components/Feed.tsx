@@ -10,13 +10,14 @@ type Props = {
 	bookmarked?: boolean
 	liked?: boolean
 	tagId?: string
+	creatorId?: string
 }
 
 export const Feed = (props: Props) => {
 	const { sortBy, type } = usePostsContext()
-	const observer = useRef<IntersectionObserver>()
-
+	
 	const searchParams = useSearchParams()
+	const observer = useRef<IntersectionObserver>()
 
 	const { data, fetchNextPage, hasNextPage, isFetching, isLoading } =
 		api.posts.get.useInfiniteQuery(

@@ -11,11 +11,13 @@ export const FontFamilyControls = () => {
 	const [isOpen, { open, close }] = useDisclosure()
 
 	const setFontFamily = (fontFamily: string) => {
+		// @ts-ignore
 		editor?.chain().focus().setFontFamily(fontFamily).run()
 		close()
 	}
 
 	const unsetFontFamily = () => {
+		// @ts-ignore
 		editor?.chain().focus().unsetFontFamily().run()
 	}
 

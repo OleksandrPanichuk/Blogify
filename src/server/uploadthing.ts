@@ -30,10 +30,12 @@ export async function uploadFileServer(formData: FormData) {
 }
 
 
-
+// TODO: fix file deletion
 export async function deleteFile(url:string) {
 	try {
-    await utapi.deleteFiles([url]);
+		const key = url.replace('https://utfs.io/t/','')
+		console.log(key)
+    await utapi.deleteFiles([key]);
 	} catch {
 		throw new Error('Failed to delete file')
 	}

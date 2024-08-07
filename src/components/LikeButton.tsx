@@ -2,18 +2,24 @@
 
 import { useToggleLike } from '@/api'
 import { formatCount } from '@/lib'
-import type { GetPostsPost } from '@/server'
 import { ActionIcon, Flex } from '@mantine/core'
+import { LikeType } from '@prisma/client'
 import { IconHeart, IconHeartFilled } from '@tabler/icons-react'
 import { useState } from 'react'
 
 type Props = {
-	postId: string
-	likes: GetPostsPost['likes']
+	itemId: string
+	likes: { id: string }[]
 	count: number
+	type: LikeType
 }
 
-export const LikeButton = ({ likes, count: initialCount, postId }: Props) => {
+export const LikeButton = ({
+	likes,
+	count: initialCount,
+	itemId,
+	type,
+}: Props) => {
 	const [liked, setLiked] = useState(!!likes.length)
 	const [count, setCount] = useState(initialCount)
 	const { mutate: toggleLike, isPending } = useToggleLike()
@@ -22,7 +28,7 @@ export const LikeButton = ({ likes, count: initialCount, postId }: Props) => {
 		if (isPending) {
 			return
 		}
-		toggleLike({ postId })
+		toggleLike({ itemId, type })
 		setCount(prev => prev + (liked ? -1 : 1))
 		setLiked(prev => !prev)
 	}

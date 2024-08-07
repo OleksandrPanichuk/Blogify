@@ -12,7 +12,7 @@ export const TagsSearchInput = () => {
 			onChange={e => setSearchValue(e.target.value)}
 			leftSection={<IconHash />}
 			placeholder='Search tags'
-			aria-label='Tags input'
+			aria-label='Search tags input'
 			className='sm:flex-1'
 		/>
 	)

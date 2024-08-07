@@ -12,6 +12,7 @@ export const IframeControl = () => {
 		const url = window.prompt('URL')
 
 		if (url) {
+			// @ts-ignore
 			editor?.chain().focus().setIframe({ src: url }).run()
 		}
 	}, [editor])

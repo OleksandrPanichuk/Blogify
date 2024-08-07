@@ -17,15 +17,26 @@ import {
 } from '@mantine/core'
 import { User } from '@prisma/client'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 
 export const WhoToFollow = () => {
-	const { data, isLoading } = api.users.get.useQuery({
-		take: 4,
-		sortBy: 'followers',
-		onlyUnfollowed: true,
-	})
+	const pathname = usePathname()
+	const { data, isLoading } = api.users.get.useQuery(
+		{
+			take: 4,
+			sortBy: 'followers',
+			onlyUnfollowed: true,
+		},
+		{
+			enabled: pathname !== Routes.USERS,
+		}
+	)
 
-	if (!isLoading && data?.length === 0) {
+	if (!isLoading && data?.users.length === 0) {
+		return null
+	}
+
+	if (pathname === Routes.USERS) {
 		return null
 	}
 
@@ -40,7 +51,7 @@ export const WhoToFollow = () => {
 								.map((_, index) => (
 									<Skeleton h={16} component='li' key={index} width={'70%'} />
 								))
-						: data?.map(user => (
+						: data?.users.map(user => (
 								<ListItem
 									w={'100%'}
 									classNames={{ itemLabel: 'w-full', itemWrapper: 'w-full' }}

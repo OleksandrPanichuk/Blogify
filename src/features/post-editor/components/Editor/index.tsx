@@ -7,7 +7,7 @@ import {
 	fontsClassName,
 	IframeControl,
 	InsertImageWithUrlControl,
-	UploadImageControl
+	UploadImageControl,
 } from './extensions'
 
 import { useTipTapEditor } from './Editor.hooks'
@@ -29,11 +29,16 @@ export const Editor = ({ onChange, initialContent, disabled }: EditorProps) => {
 
 	return (
 		<RichTextEditor
-			className={cn(styles.editor, fontsClassName, disabled && 'pointer-events-none')}
+			className={cn(
+				styles.editor,
+				fontsClassName,
+				disabled && 'pointer-events-none'
+			)}
+			// @ts-ignore
 			editor={editor}
 			contentEditable={disabled ? false : undefined}
 		>
-			<RichTextEditor.Toolbar sticky >
+			<RichTextEditor.Toolbar sticky>
 				<RichTextEditor.ControlsGroup>
 					<RichTextEditor.Bold />
 					<RichTextEditor.Italic />
@@ -136,9 +141,11 @@ interface EditorOutputProps {
 export const EditorOutput = ({ content }: EditorOutputProps) => {
 	const editor = useTipTapEditor(content)
 
+	// Show skeleton until component is fully mounted
 	return (
 		<RichTextEditor
-			className={cn(styles.editor, fontsClassName)}
+			className={cn(styles.editor, fontsClassName, 'pointer-events-none')}
+			// @ts-ignore
 			editor={editor}
 			contentEditable={false}
 		>

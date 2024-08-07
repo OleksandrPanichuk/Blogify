@@ -21,6 +21,7 @@ export function UploadImageControl() {
 
 				const url = await uploadFile(file)
 				if (url) {
+					// @ts-ignore
 					editor?.chain().focus().setImage({ src: url }).run()
 				}
 			} catch (err) {

@@ -20,6 +20,7 @@ import { forwardRef, memo } from 'react'
 import { BookmarkToggle } from './BookmarkToggle'
 import { LikeButton } from './LikeButton'
 import { PostActions } from './PostActions'
+import { LikeType } from '@prisma/client'
 
 type Props = {
 	data: GetPostsPost
@@ -79,7 +80,12 @@ export const Post = memo(
 				<Divider my={8} />
 				<Flex align={'center'} justify='space-between' gap={12}>
 					<Flex gap={12}>
-						<LikeButton likes={likes} count={data._count.likes} postId={id} />
+						<LikeButton
+							likes={likes}
+							count={data._count.likes}
+							itemId={id}
+							type={LikeType.POST}
+						/>
 						<Flex
 							component={Link}
 							href={Routes.POST(id)}

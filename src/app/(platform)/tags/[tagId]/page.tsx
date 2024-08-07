@@ -1,6 +1,6 @@
 import { ContentTabs, Feed, SortBySelect } from '@/components'
 import { PostsProvider } from '@/providers'
-import { getTagById } from '@/server'
+import { serverApi } from '@/server'
 import { Flex, Text } from '@mantine/core'
 import { Tag } from '@prisma/client'
 import { notFound } from 'next/navigation'
@@ -15,7 +15,7 @@ const TagPage = async ({ params }: Props) => {
 	let tag: Tag | undefined
 
 	try {
-		tag = await getTagById({
+		tag = await serverApi.tags.getById({
 			id: params.tagId,
 		})
 	} catch {

@@ -1,5 +1,5 @@
 'use client'
-import { Editor, ImageDropzone, TagsInput } from '@/features/post-editor'
+import { Editor, TagsInput } from '@/features/post-editor'
 import { CreatePostInput, createPostSchema } from '@/server'
 import {
 	Container,
@@ -13,6 +13,7 @@ import {
 import { useCreatePost } from '@/api'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Controller, useForm } from 'react-hook-form'
+import { ImageDropzone } from '@/components'
 
 type FormValues = Omit<CreatePostInput, 'image'> & {
 	file?: File
@@ -27,12 +28,10 @@ export const CreatePostForm = () => {
 	const {
 		control,
 		handleSubmit,
-		formState: { isSubmitting, errors },
 	} = form
 
-	console.log(errors)
 
-	const { mutateAsync: createPost } = useCreatePost()
+	const { mutateAsync: createPost, isPending: isSubmitting } = useCreatePost()
 
 	const onSubmit = (values: FormValues) => {
 		const file = values.file ?? form.getValues('file')
@@ -54,7 +53,7 @@ export const CreatePostForm = () => {
 				direction={'column'}
 				id='post-create-form'
 			>
-				<ImageDropzone name='file' control={control} disabled={isSubmitting} />
+				<ImageDropzone label="Preview image(optional)" name='file' control={control} disabled={isSubmitting} />
 				<Controller
 					control={control}
 					name='title'

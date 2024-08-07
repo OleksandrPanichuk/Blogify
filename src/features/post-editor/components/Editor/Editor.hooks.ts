@@ -24,6 +24,7 @@ export const useTipTapEditor = (
 		extensions: [
 			StarterKit.configure({ codeBlock: false }),
 			Underline,
+			// @ts-ignore
 			Link,
 			Superscript,
 			SubScript,
